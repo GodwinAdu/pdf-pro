@@ -2,26 +2,20 @@ import mongoose from "mongoose";
 
 const UserSchema = new mongoose.Schema({
     id: String,
+    name:String,
     email: {
         type: String,
         unique: true,
     },
-    files: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'File',
-        },
-    ],
-    messages: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Message',
-        },
-    ],
-    stripeCustomerId: String,
-    stripeSubscriptionId: String,
-    stripePriceId: String,
-    stripeCurrentPeriodEnd: Date,
+    phone:String,
+    quizPay:{
+        type:Boolean,
+        default: false
+    },
+    duesPay:{
+        type:Boolean,
+        default:false
+    },
 });
 
 

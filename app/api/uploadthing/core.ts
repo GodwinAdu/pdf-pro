@@ -10,9 +10,9 @@ import { PDFLoader } from 'langchain/document_loaders/fs/pdf'
 import { OpenAIEmbeddings } from 'langchain/embeddings/openai'
 import { PineconeStore } from 'langchain/vectorstores/pinecone'
 import { getPineconeClient } from '@/lib/pinecone'
-import { fetchDataWithRetry } from '@/lib/fetchRetry';
-// import { getUserSubscriptionPlan } from '@/lib/stripe'
-// import { PLANS } from '@/config/stripe'
+import { subscriptionProfile } from '@/lib/profile/subscription';
+import { PLANS } from '@/config/plans';
+
 
 const f = createUploadthing()
 
@@ -22,9 +22,10 @@ const middleware = async () => {
 
     if (!user || !user.id) throw new Error('Unauthorized')
 
-    //   const subscriptionPlan = await getUserSubscriptionPlan()
+    const subscriptionPlan = await subscriptionProfile()
 
-    return { userId: user.id }
+
+    return { userId: user.id, subscriptionPlan }
 }
 
 const onUploadComplete = async ({
@@ -54,49 +55,45 @@ const onUploadComplete = async ({
     console.log("files:", fetchPdf.url);
 
     try {
-       
+
         const value = `https://uploadthing-prod.s3.us-west-2.amazonaws.com/${file.key}`
         // const response = await fetchDataWithRetry(value, 10)
         const response = await fetch(value)
         console.log(response)
 
-        
+
         const blob = await response.blob();
         const loader = new PDFLoader(blob);
 
 
         console.log("loader", loader)
 
-        const pageLevelDocs = await loader.load()
+        const pageLevelDocs = await loader.load();
 
-        const pagesAmt = pageLevelDocs.length
+        const pagesAmt = pageLevelDocs.length;
 
         console.log(pagesAmt)
 
-        // const { subscriptionPlan } = metadata
-        // const { isSubscribed } = subscriptionPlan
+        const { subscriptionPlan, expired } = metadata
+        const isSubscribed = (subscriptionPlan.isSubscribed && subscriptionPlan.isPro)
 
-        // const isProExceeded =
-        //   pagesAmt >
-        //   PLANS.find((plan) => plan.name === 'Pro')!.pagesPerPdf
-        // const isFreeExceeded =
-        //   pagesAmt >
-        //   PLANS.find((plan) => plan.name === 'Free')!
-        //     .pagesPerPdf
+        const isProExceeded =
+            pagesAmt >
+            PLANS.find((plan) => plan.name === 'Pro')!.pagesPerPdf
+        const isFreeExceeded =
+            pagesAmt >
+            PLANS.find((plan) => plan.name === 'Free')!
+                .pagesPerPdf
 
-        // if (
-        //   (isSubscribed && isProExceeded) ||
-        //   (!isSubscribed && isFreeExceeded)
-        // ) {
-        //   await db.file.update({
-        //     data: {
-        //       uploadStatus: 'FAILED',
-        //     },
-        //     where: {
-        //       id: createdFile.id,
-        //     },
-        //   })
-        // }
+        if (
+            (isSubscribed && isProExceeded) ||
+            (!isSubscribed && isFreeExceeded)
+        ) {
+            await updateUploadStatus({
+                fileId: fetchPdf._id,
+                newStatus: 'FAILED',
+            });
+        }
 
         // vectorize and index entire document
         const pinecone = await getPineconeClient()
@@ -111,7 +108,7 @@ const onUploadComplete = async ({
             embeddings,
             {
                 pineconeIndex,
-                namespace: fetchPdf._id,
+                // namespace: fetchPdf._id,
             }
         )
         console.log("updating id", fetchPdf._id)

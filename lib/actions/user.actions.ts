@@ -20,10 +20,12 @@ export async function fetchUser({ id }: { id: string }) {
 
 interface createProps{
     id:string;
-    email:string
+    email:string;
+    name:string;
+    phone:string;
 }
 
-export async function createUser({ id, email }: createProps) {
+export async function createUser({ id, email,name,phone }: createProps) {
     await connectToDB();
 
     try {
@@ -32,10 +34,11 @@ export async function createUser({ id, email }: createProps) {
         if (existingUser) {
             throw new Error("User already exists");
         }
-         console.log("create/enauk",email)
         const user = new User({
             id,
             email,
+            name,
+            phone,
         });
         await user.save();
     } catch (error: any) {

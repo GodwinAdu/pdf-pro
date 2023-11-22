@@ -7,31 +7,49 @@ import Link from "next/link";
 import { format } from "date-fns";
 import { useState } from "react";
 import { Button } from "../ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { GetHelpButton } from "../modal/GetHelpButton";
 
-const Dashboard = () => {
-    const [currentlyDeletingFile, setCurrentlyDeletingFile] = useState<string | null>(null)
+const Dashboard = ({isSubscribed}:{isSubscribed:boolean}) => {
+  const [currentlyDeletingFile, setCurrentlyDeletingFile] = useState<
+    string | null
+  >(null);
+  
 
-  const utils = trpc.useContext()
+  console.log(isSubscribed)
+  const utils = trpc.useContext();
   const { data: files, isLoading } = trpc.getUserFiles.useQuery();
- 
-  const { mutate: deleteFile } =
-    trpc.deleteFile.useMutation({
-      onSuccess: () => {
-        utils.getUserFiles.invalidate()
-      },
-      onMutate({ id }) {
-        setCurrentlyDeletingFile(id)
-      },
-      onSettled() {
-        setCurrentlyDeletingFile(null)
-      },
-    })
+
+  const { mutate: deleteFile } = trpc.deleteFile.useMutation({
+    onSuccess: () => {
+      utils.getUserFiles.invalidate();
+    },
+    onMutate({ id }) {
+      setCurrentlyDeletingFile(id);
+    },
+    onSettled() {
+      setCurrentlyDeletingFile(null);
+    },
+  });
 
   return (
     <main className="mx-auto max-w-7xl md:p-10">
       <div className="mt-8 flex flex-col items-start justify-between gap-4 border-b border-gray-200 pb-5 sm:flex-row sm:items-center sm:gap-0">
         <h1 className="mb-3 font-bold text-5xl text-gray-900">My Files</h1>
-        <UploadButton />
+        <div className="flex gap-4 px-2">
+          <UploadButton isSubscribed={isSubscribed} />
+          <GetHelpButton />
+        </div>
       </div>
       {/**Display all user files from database */}
       {files && files?.length !== 0 ? (
@@ -63,37 +81,55 @@ const Dashboard = () => {
                   </div>
                 </Link>
 
-                <div className='px-6 mt-4 grid grid-cols-3 place-items-center py-2 gap-6 text-xs text-zinc-500'>
-                  <div className='flex items-center gap-2'>
-                    <Plus className='h-4 w-4' />
-                    {format(
-                      new Date(file.createdAt),
-                      'MMM yyyy'
-                    )}
+                <div className="px-6 mt-4 grid grid-cols-3 place-items-center py-2 gap-6 text-xs text-zinc-500">
+                  <div className="flex items-center gap-2">
+                    <Plus className="h-4 w-4" />
+                    {format(new Date(file.createdAt), "MMM yyyy")}
                   </div>
 
-                  <div className='flex items-center gap-2'>
-                    <MessageSquare className='h-4 w-4' />
+                  <div className="flex items-center gap-2">
+                    <MessageSquare className="h-4 w-4" />
                     mocked
                   </div>
 
-                  <Button
-                    onClick={() =>
-                      deleteFile({ id: file._id })
-                    }
-                    size='sm'
-                    className='w-full'
-                    variant='destructive'>
-                    {currentlyDeletingFile === file._id ? (
-                      <Loader2 className='h-4 w-4 animate-spin' />
-                    ) : (
-                      <Trash className='h-4 w-4' />
-                    )}
-                  </Button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        size="sm"
+                        className="w-full"
+                        variant="destructive"
+                      >
+                        <Trash className="h-4 w-4" />
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>
+                          Are you absolutely sure?
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This action cannot be undone. This will permanently
+                          delete your PDF and remove it from our servers.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <Button
+                          onClick={() => deleteFile({ id: file._id })}
+                          variant="destructive"
+                        >
+                          {currentlyDeletingFile === file._id ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <p>Continue</p>
+                          )}
+                        </Button>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </div>
               </li>
             ))}
-             
         </ul>
       ) : isLoading ? (
         <Skeleton height={100} className="my-2" count={3} />

@@ -9,6 +9,10 @@ import "react-loading-skeleton/dist/skeleton.css";
 import "simplebar-react/dist/simplebar.min.css";
 
 import { Toaster } from "@/components/ui/toaster";
+import ShowFooter from "@/components/footer/ShowFooter";
+import FeedbackModal from "@/components/feedback/FeedbackModal";
+import { ThemeProvider } from "@/components/theme-provider";
+import IntroModal from "@/components/modal/IntroModal";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,17 +28,27 @@ export default function RootLayout({
 }) {
   return (
     <ClerkProvider>
-      <html lang="en">
+      <html lang="en" suppressHydrationWarning>
         <Provider>
           <body
             className={cn(
-              `min-h-screen font-sans antialiased grainy`,
+              `min-h-screen font-sans antialiased grainy `,
               inter.className
             )}
           >
-            <Toaster />
-            <Navbar />
-            {children}
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <Toaster />
+              <Navbar />
+              {children}
+              <IntroModal />
+              <FeedbackModal />
+              <ShowFooter />
+            </ThemeProvider>
           </body>
         </Provider>
       </html>

@@ -1,6 +1,7 @@
 "use server"
 
 import File from "../models/file.models";
+import Message from "../models/message.models";
 import { connectToDB } from "../mongoose"
 
 interface createFileProps {
@@ -170,6 +171,7 @@ export async function deleteFile({ userId, id }: deleteFileProps) {
         if (!deletedFile) {
             throw new Error("File not found or not authorized for deletion.");
         }
+        await Message.deleteMany({fileId:id})
 
         return deletedFile; // Return the deleted file or a success message.
 

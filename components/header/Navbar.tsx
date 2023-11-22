@@ -3,12 +3,11 @@ import MaxWidthWrapper from "../common/MaxWidthWrapper";
 import { buttonVariants } from "../ui/button";
 
 import { ArrowRight } from "lucide-react";
-// import UserAccountNav from "../UserAccountNav";
+import UserAccountNav from "../UserAccountNav";
 import MobileNav from "./MobileNav";
 import { currentUser } from "@clerk/nextjs";
 
 const Navbar = async () => {
-  
   const user = await currentUser();
 
   return (
@@ -20,7 +19,16 @@ const Navbar = async () => {
           </Link>
 
           <div className="flex gap-5 items-center">
-            <MobileNav isAuth={!!user} />
+            <MobileNav
+              isAuth={!!user}
+              name={
+                !user?.firstName || !user?.lastName
+                  ? "Your Account"
+                  : `${user?.firstName} ${user?.lastName}`
+              }
+              email={user?.emailAddresses[0].emailAddress ?? ""}
+              imageUrl={user?.imageUrl ?? ""}
+            />
 
             <div className="hidden items-center space-x-4 sm:flex">
               {!user ? (
@@ -55,6 +63,15 @@ const Navbar = async () => {
               ) : (
                 <>
                   <Link
+                    href="/chat-ai"
+                    className={buttonVariants({
+                      variant: "ghost",
+                      size: "sm",
+                    })}
+                  >
+                    Chat AI
+                  </Link>
+                  <Link
                     href="/dashboard"
                     className={buttonVariants({
                       variant: "ghost",
@@ -63,16 +80,34 @@ const Navbar = async () => {
                   >
                     Dashboard
                   </Link>
+                  <Link
+                    href="/library"
+                    className={buttonVariants({
+                      variant: "ghost",
+                      size: "sm",
+                    })}
+                  >
+                    Library
+                  </Link>
+                  <Link
+                    href="/pricing"
+                    className={buttonVariants({
+                      variant: "ghost",
+                      size: "sm",
+                    })}
+                  >
+                    Pricing
+                  </Link>
 
-                  {/* <UserAccountNav
-                      name={
-                        !user.given_name || !user.family_name
-                          ? 'Your Account'
-                          : `${user.given_name} ${user.family_name}`
-                      }
-                      email={user.email ?? ''}
-                      imageUrl={user.picture ?? ''}
-                    /> */}
+                  <UserAccountNav
+                    name={
+                      !user?.firstName || !user?.lastName
+                        ? "Your Account"
+                        : `${user?.firstName} ${user?.lastName}`
+                    }
+                    email={user?.emailAddresses[0].emailAddress ?? ""}
+                    imageUrl={user?.imageUrl ?? ""}
+                  />
                 </>
               )}
             </div>

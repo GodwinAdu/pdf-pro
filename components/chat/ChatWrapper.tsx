@@ -7,6 +7,7 @@ import { ChevronLeft, Loader2, XCircle } from "lucide-react";
 import { trpc } from "@/app/_trpc/client";
 import Link from "next/link";
 import { buttonVariants } from "../ui/button";
+import { ChatContextProvider } from "./ChatContext";
 
 const ChatWrapper = ({ id }:{id:string}) => {
   const { data, isLoading } = trpc.getFileUploadStatus.useQuery(
@@ -94,13 +95,15 @@ const ChatWrapper = ({ id }:{id:string}) => {
   )
 
     return (
+      <ChatContextProvider fileId={id}>
       <div className='relative min-h-full bg-zinc-50 flex divide-y divide-zinc-200 flex-col justify-between gap-2'>
-          <div className='flex-1 justify-between flex flex-col mb-28'>
-            <Messages  />
-          </div>
-
-          <ChatInput />
+        <div className='flex-1 justify-between flex flex-col mb-28'>
+          <Messages fileId={id} />
         </div>
+
+        <ChatInput />
+      </div>
+    </ChatContextProvider>
     )
 };
 
