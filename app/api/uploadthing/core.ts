@@ -50,19 +50,19 @@ const onUploadComplete = async ({
 
     try {
         await createFile(data)
-    } catch (error:any) {
+    } catch (error: any) {
         console.log("couldnt create file to DB")
         throw error
     }
 
-    
 
 
-    
+
+
     const fetchPdf = await fetchCurrentPDF({ key: file.key })
     try {
 
-    console.log("files:", fetchPdf.url);
+        console.log("files:", fetchPdf.url);
         const value = `https://uploadthing-prod.s3.us-west-2.amazonaws.com/${file.key}`
         // const response = await fetchDataWithRetry(value, 10)
         const response = await fetch(value, { cache: 'no-store' })
@@ -81,7 +81,7 @@ const onUploadComplete = async ({
 
         console.log(pagesAmt)
 
-        const { subscriptionPlan} = metadata
+        const { subscriptionPlan } = metadata
         const isSubscribed = (subscriptionPlan.isSubscribed && subscriptionPlan.isPro)
 
         const isProExceeded =

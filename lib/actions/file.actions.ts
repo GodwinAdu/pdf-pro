@@ -21,8 +21,9 @@ export async function createFile(data: createFileProps) {
         const existingFile = await File.findOne({ key });
 
         if (existingFile) {
-            throw new Error("File already exist is DB")
+            throw new Error("File already exist is DB");
         }
+
         const file = new File({
             key,
             name,
@@ -32,7 +33,7 @@ export async function createFile(data: createFileProps) {
         })
 
         await file.save();
-        return file;
+        // return file;
 
     } catch (error: any) {
         console.log("Unable to create file to DB", error)
