@@ -74,7 +74,7 @@ const onUploadComplete = async ({
 
         console.log(pagesAmt)
 
-        const { subscriptionPlan, expired } = metadata
+        const { subscriptionPlan} = metadata
         const isSubscribed = (subscriptionPlan.isSubscribed && subscriptionPlan.isPro)
 
         const isProExceeded =
