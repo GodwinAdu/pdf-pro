@@ -48,14 +48,21 @@ const onUploadComplete = async ({
         uploadStatus: 'PROCESSING',
     };
 
-    await createFile(data)
+    try {
+        await createFile(data)
+    } catch (error:any) {
+        console.log("couldnt create file to DB")
+        throw error
+    }
 
+    
+
+
+    
     const fetchPdf = await fetchCurrentPDF({ key: file.key })
-
-    console.log("files:", fetchPdf.url);
-
     try {
 
+    console.log("files:", fetchPdf.url);
         const value = `https://uploadthing-prod.s3.us-west-2.amazonaws.com/${file.key}`
         // const response = await fetchDataWithRetry(value, 10)
         const response = await fetch(value, { cache: 'no-store' })
