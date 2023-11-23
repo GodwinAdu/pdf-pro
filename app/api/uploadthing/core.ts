@@ -58,7 +58,7 @@ const onUploadComplete = async ({
 
         const value = `https://uploadthing-prod.s3.us-west-2.amazonaws.com/${file.key}`
         // const response = await fetchDataWithRetry(value, 10)
-        const response = await fetch(value)
+        const response = await fetch(value, { cache: 'no-store' })
         console.log(response)
 
 
