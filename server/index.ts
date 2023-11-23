@@ -113,6 +113,7 @@ export const appRouter = router({
 
             if (!file) throw new TRPCError({ code: 'NOT_FOUND' });
 
+            console.log("in trpc",file)
             return file;
         }),
     deleteFile: privateProcedure
