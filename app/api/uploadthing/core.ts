@@ -20,7 +20,7 @@ const middleware = async () => {
 
     const user = await currentUser();
 
-    if (!user || !user.id) throw new Error('Unauthorized')
+    if (!user || !user?.id) throw new Error('Unauthorized')
 
     const subscriptionPlan = await subscriptionProfile()
 
@@ -82,7 +82,7 @@ const onUploadComplete = async ({
         console.log(pagesAmt)
 
         const { subscriptionPlan } = metadata
-        const isSubscribed = (subscriptionPlan.isSubscribed && subscriptionPlan.isPro)
+        const isSubscribed = (subscriptionPlan?.isSubscribed && subscriptionPlan?.isPro)
 
         const isProExceeded =
             pagesAmt >

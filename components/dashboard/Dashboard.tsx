@@ -62,7 +62,7 @@ const Dashboard = ({isSubscribed}:{isSubscribed:boolean}) => {
             )
             .map((file) => (
               <li
-                key={file._id}
+                key={file?._id}
                 className="col-span-1 divide-y divide-gray-200 rounded-lg bg-white shadow transition  hover:shadow-lg"
               >
                 <Link
@@ -74,7 +74,7 @@ const Dashboard = ({isSubscribed}:{isSubscribed:boolean}) => {
                     <div className="flex-1 truncate">
                       <div className="flex items-center space-x-3">
                         <h3 className="truncate text-lg font-medium text-zinc-900">
-                          {file.name}
+                          {file?.name}
                         </h3>
                       </div>
                     </div>
@@ -115,10 +115,10 @@ const Dashboard = ({isSubscribed}:{isSubscribed:boolean}) => {
                       <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
                         <Button
-                          onClick={() => deleteFile({ id: file._id })}
+                          onClick={() => deleteFile({ id: file?._id })}
                           variant="destructive"
                         >
-                          {currentlyDeletingFile === file._id ? (
+                          {currentlyDeletingFile === file?._id ? (
                             <Loader2 className="h-4 w-4 animate-spin" />
                           ) : (
                             <p>Continue</p>

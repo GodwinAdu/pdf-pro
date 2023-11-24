@@ -6,7 +6,7 @@ import { redirect } from "next/navigation";
 
 
 
-export const dynamic = 'force-dynamic'
+
 
 const page = async () => {
    
@@ -20,7 +20,7 @@ const page = async () => {
     if(!dbUser) redirect("/auth-callback?origin=dashboard");
 
     const subscriptionPlan = await subscriptionProfile();
-    const  isSubscribed  = (subscriptionPlan.isSubscribed && subscriptionPlan.isPro) 
+    const  isSubscribed  = (subscriptionPlan?.isSubscribed && subscriptionPlan?.isPro) 
   return <Dashboard isSubscribed={isSubscribed} />
 }
 

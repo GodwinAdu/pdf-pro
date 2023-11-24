@@ -8,7 +8,7 @@ export async function currentProfile(){
     
     if(!user) return redirect('/sign-in')
 
-    const profile = fetchUser({id:user.id})
+    const profile = fetchUser({id:user?.id})
     
     if(!profile) return redirect('/auth-callback');
 
