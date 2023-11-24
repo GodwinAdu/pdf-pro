@@ -22,10 +22,10 @@ interface createProps{
     id:string;
     email:string;
     name:string;
-    phone:string;
+    // phone:string;
 }
 
-export async function createUser({ id, email,name,phone }: createProps) {
+export async function createUser({ id, email,name}: createProps) {
     await connectToDB();
 
     try {
@@ -38,7 +38,7 @@ export async function createUser({ id, email,name,phone }: createProps) {
             id,
             email,
             name,
-            phone,
+            // phone,
         });
         await user.save();
     } catch (error: any) {

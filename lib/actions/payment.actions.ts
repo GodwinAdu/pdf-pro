@@ -69,7 +69,7 @@ export async function sendPayment({
 }
 
 interface SubscriptionProps {
-    userId: string
+    userId: string | undefined
 }
 
 export async function getSubscription({ userId }: SubscriptionProps) {

@@ -27,7 +27,7 @@ export const appRouter = router({
                 id: user?.id,
                 name:`${user?.firstName}  ${user?.lastName}`,
                 email: user?.emailAddresses[0].emailAddress,
-                phone:user?.phoneNumbers[0].phoneNumber
+                // phone:user?.phoneNumbers[0].phoneNumber
             })
         }
         return { success: true }

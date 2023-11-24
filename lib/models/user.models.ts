@@ -7,7 +7,7 @@ const UserSchema = new mongoose.Schema({
         type: String,
         unique: true,
     },
-    phone:String,
+    // phone:String,
     quizPay:{
         type:Boolean,
         default: false

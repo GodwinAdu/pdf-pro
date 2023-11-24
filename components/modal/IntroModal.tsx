@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
@@ -13,9 +13,10 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Separator } from "../ui/separator";
 
 const IntroModal = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
 
   useEffect(() => {
     const modalKey = "introModal";
@@ -41,7 +42,10 @@ const IntroModal = () => {
       const lastOpenedTime = localStorage.getItem(lastOpenedKey);
       const currentTime = new Date().getTime();
 
-      if (lastOpenedTime && currentTime - parseInt(lastOpenedTime) >= tenHoursInMilliseconds) {
+      if (
+        lastOpenedTime &&
+        currentTime - parseInt(lastOpenedTime) >= tenHoursInMilliseconds
+      ) {
         // More than 10 hours have passed, open the modal again
         setIsOpen(true);
         // Update the last opened time in localStorage
@@ -50,46 +54,23 @@ const IntroModal = () => {
     }
   }, []); // The empty dependency array ensures this effect runs only once
 
-  const closeModal = () => {
-    setIsOpen(false);
-  };
+  // const closeModal = () => {
+  //   setIsOpen(false);
+  // };
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent className="w-[96%] max-w-4xl">
         <DialogHeader>
-          <DialogTitle className='font-bold'>Notice !!!.</DialogTitle>
-          <DialogDescription>
-            Make changes to your profile here. Click save when you're done.
+          <DialogTitle className="font-bold text-xl">Notice !!!.</DialogTitle>
+          <DialogDescription className="font-semibold">
+            We strongly recommend that all users carefully review this
+            information before commencing the use of this application.
           </DialogDescription>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="name" className="text-right">
-              Name
-            </Label>
-            <Input
-              id="name"
-              defaultValue="Pedro Duarte"
-              className="col-span-3"
-            />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="username" className="text-right">
-              Username
-            </Label>
-            <Input
-              id="username"
-              defaultValue="@peduarte"
-              className="col-span-3"
-            />
-          </div>
-        </div>
-        <DialogFooter>
-          <Button type="submit" onClick={closeModal}>
-            Save changes
-          </Button>
-        </DialogFooter>
+        <Separator />
+        <div className="py-4"></div>
+        <DialogFooter></DialogFooter>
       </DialogContent>
     </Dialog>
   );
