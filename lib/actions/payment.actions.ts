@@ -78,7 +78,8 @@ export async function getSubscription({ userId }: SubscriptionProps) {
         const subscription = await Payment.findOne({ userId });
 
         if (!subscription) {
-            throw new Error('Subscription not exist');
+            console.log('Subscription not exist');
+            return null;
         }
 
         return subscription
@@ -98,7 +99,8 @@ export async function getSubscriptionAndUpdateStatus({ userId }: SubscriptionPro
         const subscription = await Payment.findOne({ userId });
 
         if (!subscription) {
-            throw new Error('Subscription not exist');
+            console.log('Subscription not exist');
+            return null;
         }
 
         // Check if the subscription has expired based on the period

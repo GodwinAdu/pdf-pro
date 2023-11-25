@@ -60,7 +60,7 @@ const Messages = ({ fileId }: MessagesProps) => {
   console.log("combinedMessages", combinedMessages);
 
   return (
-    <div className="flex max-h-[calc(100vh-3.5rem-7rem)] border-zinc-200 flex-1 flex-col-reverse gap-4 p-3 overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch">
+    <div className="flex max-h-[calc(100vh-3.5rem)] border-zinc-200 flex-1 flex-col-reverse gap-4 p-3 overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch">
       {combinedMessages?.map((page, pageIndex) =>
         page?.messages?.map((message, i) => {
           const isNextMessageSamePerson =
@@ -92,14 +92,14 @@ const Messages = ({ fileId }: MessagesProps) => {
       )}
 
       {isLoading ? (
-        <div className="w-full flex flex-col gap-2">
+        <div className="w-full flex flex-col gap-2 max-h-[calc(100vh-3.5rem)]">
           <Skeleton className="h-16" />
           <Skeleton className="h-16" />
           <Skeleton className="h-16" />
           <Skeleton className="h-16" />
         </div>
       ) : combinedMessages.every((page) => page?.messages?.length === 0) ? (
-        <div className="flex-1 flex flex-col items-center justify-center gap-2">
+        <div className="flex-1 flex flex-col items-center justify-center pt-40 gap-2 max-h-[calc(100vh-3.5rem)]">
           <MessageSquare className="h-8 w-8 text-blue-500" />
           <h3 className="font-semibold text-xl">You&apos;re all set!</h3>
           <p className="text-zinc-500 text-sm">

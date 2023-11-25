@@ -11,7 +11,8 @@ export async function subscriptionProfile() {
   const subscription = await getSubscription({ userId });
 
   if (!subscription) {
-    throw new Error("Not yet a subscriber");
+    console.log("Not yet a subscriber");
+    return null
   }
 
   return subscription;
