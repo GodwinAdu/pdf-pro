@@ -16,7 +16,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "../ui/separator";
 
 const IntroModal = () => {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     const modalKey = "introModal";
