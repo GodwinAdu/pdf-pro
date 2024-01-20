@@ -6,7 +6,7 @@ import React from "react";
 const page = async () => {
   const user = await currentUser();
   return (
-    <div className="relative ">
+    <div className="relative overflow-hidden">
       <div className="hidden h-[calc(100vh-3.5rem)] md:flex  md:fixed md:w-72  z-[80] bg-gray-900">
         <div className="w-full">
           <Sidebar />

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import UserAccountNav from "../UserAccountNav";
+import { SignedIn } from "@clerk/nextjs";
 
 interface MobileNavProps {
   isAuth: boolean;
@@ -33,12 +34,13 @@ const MobileNav = ({ isAuth, name, email, imageUrl }: MobileNavProps) => {
   return (
     <div className="sm:hidden">
       <div className="flex items-center gap-4">
+        <SignedIn>
+          <UserAccountNav name={name} imageUrl={imageUrl} email={email} />
+        </SignedIn>
         <Menu
           onClick={toggleOpen}
           className="relative z-50 h-5 w-5 text-zinc-700"
         />
-
-        <UserAccountNav name={name} imageUrl={imageUrl} email={email} />
       </div>
 
       {isOpen ? (
@@ -64,6 +66,16 @@ const MobileNav = ({ isAuth, name, email, imageUrl }: MobileNavProps) => {
                     href="/sign-in"
                   >
                     Sign in
+                  </Link>
+                </li>
+                <li className="my-3 h-px w-full bg-gray-300" />
+                <li>
+                  <Link
+                    onClick={() => closeOnCurrent("/blogs")}
+                    className="flex items-center w-full font-semibold"
+                    href="/blogs"
+                  >
+                    Blogs
                   </Link>
                 </li>
                 <li className="my-3 h-px w-full bg-gray-300" />
@@ -109,6 +121,15 @@ const MobileNav = ({ isAuth, name, email, imageUrl }: MobileNavProps) => {
                   </Link>
                 </li>
                 <li className="my-3 h-px w-full bg-gray-300" />
+                <li>
+                  <Link
+                    onClick={() => closeOnCurrent("/pricing")}
+                    className="flex items-center w-full font-semibold"
+                    href="/blogs"
+                  >
+                    Blogs
+                  </Link>
+                </li>
                 <li>
                   <Link
                     onClick={() => closeOnCurrent("/pricing")}

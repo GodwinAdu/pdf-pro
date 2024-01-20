@@ -5,7 +5,7 @@ import { buttonVariants } from "../ui/button";
 import { ArrowRight } from "lucide-react";
 import UserAccountNav from "../UserAccountNav";
 import MobileNav from "./MobileNav";
-import { currentUser } from "@clerk/nextjs";
+import { SignIn, SignedIn, currentUser } from "@clerk/nextjs";
 
 const Navbar = async () => {
   const user = await currentUser();
@@ -52,6 +52,15 @@ const Navbar = async () => {
                     Sign in
                   </Link>
                   <Link
+                    href="/sign-in"
+                    className={buttonVariants({
+                      variant: "ghost",
+                      size: "sm",
+                    })}
+                  >
+                    Blogs/Articles
+                  </Link>
+                  <Link
                     href="/sign-up"
                     className={buttonVariants({
                       size: "sm",
@@ -90,6 +99,15 @@ const Navbar = async () => {
                     Library
                   </Link>
                   <Link
+                    href="/blogs"
+                    className={buttonVariants({
+                      variant: "ghost",
+                      size: "sm",
+                    })}
+                  >
+                    Blogs
+                  </Link>
+                  <Link
                     href="/pricing"
                     className={buttonVariants({
                       variant: "ghost",
@@ -99,15 +117,17 @@ const Navbar = async () => {
                     Pricing
                   </Link>
 
-                  <UserAccountNav
-                    name={
-                      !user?.firstName || !user?.lastName
-                        ? "Your Account"
-                        : `${user?.firstName} ${user?.lastName}`
-                    }
-                    email={user?.emailAddresses[0].emailAddress ?? ""}
-                    imageUrl={user?.imageUrl ?? ""}
-                  />
+                  <SignedIn>
+                    <UserAccountNav
+                      name={
+                        !user?.firstName || !user?.lastName
+                          ? "Your Account"
+                          : `${user?.firstName} ${user?.lastName}`
+                      }
+                      email={user?.emailAddresses[0].emailAddress ?? ""}
+                      imageUrl={user?.imageUrl ?? ""}
+                    />
+                  </SignedIn>
                 </>
               )}
             </div>

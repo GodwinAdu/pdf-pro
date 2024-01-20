@@ -56,7 +56,7 @@ const Messages = ({userId}:{userId:string}) => {
 
 
   return (
-    <div className="flex max-h-[calc(100vh-3.5rem)] border-zinc-200 flex-1 flex-col-reverse gap-4 p-3 overflow-hidden scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch">
+    <div className="flex max-h-[calc(100vh-3.5rem-7rem)] border-zinc-200 flex-1 flex-col-reverse gap-4 p-3 overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch">
       {combinedMessages?.map((page, pageIndex) =>
         page?.messages?.map((message, i) => {
           const isNextMessageSamePerson =
@@ -88,14 +88,14 @@ const Messages = ({userId}:{userId:string}) => {
       )}
 
       {isLoading ? (
-        <div className="w-full flex flex-col gap-2 max-h-[calc(100vh-3.5rem)]">
+        <div className="w-full flex flex-col gap-2 ">
           <Skeleton className="h-16" />
           <Skeleton className="h-16" />
           <Skeleton className="h-16" />
           <Skeleton className="h-16" />
         </div>
       ) : combinedMessages.every((page) => page?.messages?.length === 0) ? (
-        <div className="flex-1 flex flex-col items-center justify-center pt-40 gap-2 max-h-[calc(100vh-3.5rem)]">
+        <div className="flex-1 flex flex-col items-center justify-center pt-40 gap-2">
           <Bot className="h-8 w-8 text-blue-500" />
           <h3 className="font-semibold text-xl">You&apos;re all set!</h3>
           <p className="text-zinc-500 text-sm">
