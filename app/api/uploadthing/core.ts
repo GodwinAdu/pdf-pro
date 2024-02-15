@@ -7,8 +7,8 @@ import {
 } from 'uploadthing/next'
 
 import { PDFLoader } from 'langchain/document_loaders/fs/pdf'
-import { OpenAIEmbeddings } from 'langchain/embeddings/openai'
-import { PineconeStore } from 'langchain/vectorstores/pinecone'
+import { OpenAIEmbeddings } from '@langchain/openai'
+import { PineconeStore } from '@langchain/pinecone'
 import { getPineconeClient } from '@/lib/pinecone'
 import { subscriptionProfile } from '@/lib/profile/subscription';
 import { PLANS } from '@/config/plans';
@@ -105,6 +105,7 @@ const onUploadComplete = async ({
         // vectorize and index entire document
         const pinecone = await getPineconeClient()
         const pineconeIndex = pinecone.Index('summaq')
+       
 
         const embeddings = new OpenAIEmbeddings({
             openAIApiKey: process.env.OPENAI_API_KEY,
@@ -115,14 +116,16 @@ const onUploadComplete = async ({
             embeddings,
             {
                 pineconeIndex,
-                // namespace: fetchPdf._id,
+                namespace: fetchPdf._id,
             }
         )
         console.log("updating id", fetchPdf._id)
+        // await pinecone.deleteIndex('summaq');
         await updateUploadStatus({
             fileId: fetchPdf._id,
             newStatus: 'SUCCESS',
         });
+        
     } catch (err: any) {
         console.error('Error in the try block:', err);
         await updateUploadStatus({

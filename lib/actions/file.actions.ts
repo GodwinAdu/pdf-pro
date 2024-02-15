@@ -3,6 +3,7 @@
 import File from "../models/file.models";
 import Message from "../models/message.models";
 import { connectToDB } from "../mongoose"
+import { getPineconeClient } from "../pinecone";
 
 interface createFileProps {
     key: string;
@@ -33,7 +34,6 @@ export async function createFile(data: createFileProps) {
         })
 
         await file.save();
-        // return file;
 
     } catch (error: any) {
         console.log("Unable to create file to DB", error)
@@ -53,8 +53,9 @@ export async function fetchUserFiles({ userId }: Props) {
         const files = await File.find({ userId })
         if (!files) {
             console.log("no files exist ");
-            
+            throw new Error("No files found")
         }
+
         return files
 
     } catch (error: any) {
@@ -89,13 +90,11 @@ interface FetchFileIdProps {
 export async function fetchFileById({ id, userId }: FetchFileIdProps) {
     await connectToDB();
     try {
-        console.log("server id",id)
         const file = await File.findOne({ _id:id, userId });
 
         if (!file) {
             return {status: "PENDING" as const}
         };
-       
 
         return file
        
@@ -159,8 +158,6 @@ interface deleteFileProps {
     userId: string
 }
 
-
-
 export async function deleteFile({ userId, id }: deleteFileProps) {
     await connectToDB();
 
@@ -172,6 +169,14 @@ export async function deleteFile({ userId, id }: deleteFileProps) {
         if (!deletedFile) {
             throw new Error("File not found or not authorized for deletion.");
         }
+       
+         // Delete data from pinecode vector database with delete file id
+         const pc = await getPineconeClient();
+         const pinecone = pc.index("summaq");
+         await pinecone.namespace(id).deleteAll();
+         
+
+         //Delete all message with delete file id
         await Message.deleteMany({fileId:id})
 
         return deletedFile; // Return the deleted file or a success message.
@@ -189,7 +194,7 @@ interface statusProps{
 }
 export async function  updateUploadStatus({fileId, newStatus}:statusProps) {
     await connectToDB();
-    console.log("servr fileID",fileId)
+  
     try {
       const updatedFile = await File.findByIdAndUpdate(
         fileId,

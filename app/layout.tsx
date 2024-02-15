@@ -13,6 +13,7 @@ import ShowFooter from "@/components/footer/ShowFooter";
 import FeedbackModal from "@/components/feedback/FeedbackModal";
 import { ThemeProvider } from "@/components/theme-provider";
 import IntroModal from "@/components/modal/IntroModal";
+import Loader from "@/components/progress-bar/Loader"
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -43,6 +44,7 @@ export default function RootLayout({
               disableTransitionOnChange
             >
               <Toaster />
+              <Loader />
               <Navbar />
               {children}
               <IntroModal />

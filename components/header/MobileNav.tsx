@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import UserAccountNav from "../UserAccountNav";
-import { SignedIn } from "@clerk/nextjs";
+import { SignedIn, UserButton } from "@clerk/nextjs";
 
 interface MobileNavProps {
   isAuth: boolean;
@@ -35,7 +35,7 @@ const MobileNav = ({ isAuth, name, email, imageUrl }: MobileNavProps) => {
     <div className="sm:hidden">
       <div className="flex items-center gap-4">
         <SignedIn>
-          <UserAccountNav name={name} imageUrl={imageUrl} email={email} />
+         <UserButton afterSignOutUrl="/" />
         </SignedIn>
         <Menu
           onClick={toggleOpen}

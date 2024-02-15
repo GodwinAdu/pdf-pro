@@ -5,7 +5,7 @@ import { buttonVariants } from "../ui/button";
 import { ArrowRight } from "lucide-react";
 import UserAccountNav from "../UserAccountNav";
 import MobileNav from "./MobileNav";
-import { SignIn, SignedIn, currentUser } from "@clerk/nextjs";
+import { SignIn, SignedIn, UserButton, currentUser } from "@clerk/nextjs";
 
 const Navbar = async () => {
   const user = await currentUser();
@@ -43,13 +43,13 @@ const Navbar = async () => {
                     Pricing
                   </Link>
                   <Link
-                    href="/sign-in"
+                    href="/blogs"
                     className={buttonVariants({
                       variant: "ghost",
                       size: "sm",
                     })}
                   >
-                    Sign in
+                    Blogs
                   </Link>
                   <Link
                     href="/sign-in"
@@ -58,7 +58,7 @@ const Navbar = async () => {
                       size: "sm",
                     })}
                   >
-                    Blogs/Articles
+                    Sign in
                   </Link>
                   <Link
                     href="/sign-up"
@@ -71,6 +71,15 @@ const Navbar = async () => {
                 </>
               ) : (
                 <>
+                 <Link
+                    href="/dashboard"
+                    className={buttonVariants({
+                      variant: "ghost",
+                      size: "sm",
+                    })}
+                  >
+                    Dashboard
+                  </Link>
                   <Link
                     href="/chat-ai"
                     className={buttonVariants({
@@ -79,15 +88,6 @@ const Navbar = async () => {
                     })}
                   >
                     Chat AI
-                  </Link>
-                  <Link
-                    href="/dashboard"
-                    className={buttonVariants({
-                      variant: "ghost",
-                      size: "sm",
-                    })}
-                  >
-                    Dashboard
                   </Link>
                   <Link
                     href="/library"
@@ -118,15 +118,7 @@ const Navbar = async () => {
                   </Link>
 
                   <SignedIn>
-                    <UserAccountNav
-                      name={
-                        !user?.firstName || !user?.lastName
-                          ? "Your Account"
-                          : `${user?.firstName} ${user?.lastName}`
-                      }
-                      email={user?.emailAddresses[0].emailAddress ?? ""}
-                      imageUrl={user?.imageUrl ?? ""}
-                    />
+                    <UserButton afterSignOutUrl="/" />
                   </SignedIn>
                 </>
               )}
