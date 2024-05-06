@@ -5,7 +5,7 @@ import { openai } from "@/lib/openai";
 
 import { NextRequest } from "next/server"
 import { OpenAIStream, StreamingTextResponse } from 'ai'
-import { currentUser } from "@clerk/nextjs";
+import { currentUser } from "@clerk/nextjs/server";
 import { SendConversationValidator } from "@/lib/validators/SendConversationValidator";
 import { createBotConversation, createConversation, fetchPrevConversations } from "@/lib/actions/conversation.actions";
 

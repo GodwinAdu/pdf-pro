@@ -1,6 +1,7 @@
 
-import { currentUser } from '@clerk/nextjs'
-import { TRPCError, initTRPC } from '@trpc/server'
+import { currentUser } from '@clerk/nextjs/server'
+import { TRPCError, initTRPC } from '@trpc/server';
+
 
 const t = initTRPC.create()
 const middleware = t.middleware

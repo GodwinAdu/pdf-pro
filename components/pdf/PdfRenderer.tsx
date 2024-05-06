@@ -14,7 +14,7 @@ import "react-pdf/dist/Page/TextLayer.css";
 
 import { useResizeDetector } from "react-resize-detector";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -33,6 +33,7 @@ import PdfFullscreen from "./PdfFullscreen";
 import { useToast } from "../ui/use-toast";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
+import AudioButton from "./AudioButton";
 
 
 // pdfjs.GlobalWorkerOptions.workerSrc = new URL(
@@ -48,10 +49,10 @@ interface PdfRendererProps {
   url: string;
 }
 const options = {
-    cMapUrl: '/cmaps/',
-    standardFontDataUrl: '/standard_fonts/',
-  };
-  
+  cMapUrl: '/cmaps/',
+  standardFontDataUrl: '/standard_fonts/',
+};
+
 
 const PdfRenderer = ({ url }: PdfRendererProps) => {
   const { toast } = useToast();
@@ -61,8 +62,29 @@ const PdfRenderer = ({ url }: PdfRendererProps) => {
   const [scale, setScale] = useState<number>(1);
   const [rotation, setRotation] = useState<number>(0);
   const [renderedScale, setRenderedScale] = useState<number | null>(null);
+  const [text, setText] = useState("");
 
-  
+  const handleTextExtraction = async (pageNumber: number) => {
+    try {
+      const pdf = await pdfjs.getDocument(url).promise;
+      const page = await pdf.getPage(pageNumber);
+      const textContent = await page.getTextContent();
+      const pageText = textContent.items
+        .map((item: any) => (typeof item === "string" ? item : item.str))
+        .join(" ");
+      console.log(pageText, "page text")
+      setText(pageText);
+    } catch (error) {
+      console.log("Error extracting text:", error);
+    }
+  };
+
+  useEffect(() => {
+    handleTextExtraction(currPage); // Extract text from the first page initially
+  }, [url, currPage]);
+
+  // console.log(text, "pdf page")
+
 
   const isLoading = renderedScale !== scale;
 
@@ -90,7 +112,7 @@ const PdfRenderer = ({ url }: PdfRendererProps) => {
     setNumPages(numPages);
   }
 
-  console.log("error",errors);
+  console.log("error", errors);
 
   const { width, ref } = useResizeDetector();
 
@@ -100,142 +122,147 @@ const PdfRenderer = ({ url }: PdfRendererProps) => {
   };
 
   return (
-    <div className="w-full bg-white rounded-md shadow flex flex-col items-center">
-      <div className="h-14 w-full border-b border-zinc-200 flex items-center justify-between px-2">
-        <div className="flex items-center gap-1.5">
-          <Button
-            disabled={currPage <= 1}
-            onClick={() => {
-              setCurrPage((prev) => (prev - 1 > 1 ? prev - 1 : 1));
-              setValue("page", String(currPage - 1));
-            }}
-            variant="ghost"
-            aria-label="previous page"
-          >
-            <ChevronDown className="h-4 w-4" />
-          </Button>
-
+    <div className="relative">
+      <div className="absolute bottom-56">
+        <AudioButton text={text} />
+      </div>
+      <div className="w-full bg-white rounded-md shadow flex flex-col items-center">
+        <div className="h-14 w-full border-b border-zinc-200 flex items-center justify-between px-2">
           <div className="flex items-center gap-1.5">
-            <Input
-              {...register("page")}
-              className={cn(
-                "w-12 h-8",
-                errors.page && "focus-visible:ring-red-500"
-              )}
-              onKeyDown={(e: any) => {
-                if (e.key === "Enter") {
-                  handleSubmit(handlePageSubmit)();
-                }
+            <Button
+              disabled={currPage <= 1}
+              onClick={() => {
+                setCurrPage((prev) => (prev - 1 > 1 ? prev - 1 : 1));
+                setValue("page", String(currPage - 1));
               }}
-            />
-            <p className="text-zinc-700 text-sm space-x-1">
-              <span>/</span>
-              <span>{numPages ?? "x"}</span>
-            </p>
+              variant="ghost"
+              aria-label="previous page"
+            >
+              <ChevronDown className="h-4 w-4" />
+            </Button>
+
+            <div className="flex items-center gap-1.5">
+              <Input
+                {...register("page")}
+                className={cn(
+                  "w-12 h-8",
+                  errors.page && "focus-visible:ring-red-500"
+                )}
+                onKeyDown={(e: any) => {
+                  if (e.key === "Enter") {
+                    handleSubmit(handlePageSubmit)();
+                  }
+                }}
+              />
+              <p className="text-zinc-700 text-sm space-x-1">
+                <span>/</span>
+                <span>{numPages ?? "x"}</span>
+              </p>
+            </div>
+
+            <Button
+              disabled={numPages === undefined || currPage === numPages}
+              onClick={() => {
+                setCurrPage((prev) =>
+                  prev + 1 > numPages! ? numPages! : prev + 1
+                );
+                setValue("page", String(currPage + 1));
+              }}
+              variant="ghost"
+              aria-label="next page"
+            >
+              <ChevronUp className="h-4 w-4" />
+            </Button>
           </div>
 
-          <Button
-            disabled={numPages === undefined || currPage === numPages}
-            onClick={() => {
-              setCurrPage((prev) =>
-                prev + 1 > numPages! ? numPages! : prev + 1
-              );
-              setValue("page", String(currPage + 1));
-            }}
-            variant="ghost"
-            aria-label="next page"
-          >
-            <ChevronUp className="h-4 w-4" />
-          </Button>
-        </div>
+          <div className="space-x-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button className="gap-1.5" aria-label="zoom" variant="ghost">
+                  <Search className="h-4 w-4" />
+                  {scale * 100}%
+                  <ChevronDown className="h-3 w-3 opacity-50" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem onSelect={() => setScale(1)}>
+                  100%
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => setScale(1.5)}>
+                  150%
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => setScale(2)}>
+                  200%
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => setScale(2.5)}>
+                  250%
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
 
-        <div className="space-x-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button className="gap-1.5" aria-label="zoom" variant="ghost">
-                <Search className="h-4 w-4" />
-                {scale * 100}%
-                <ChevronDown className="h-3 w-3 opacity-50" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem onSelect={() => setScale(1)}>
-                100%
-              </DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => setScale(1.5)}>
-                150%
-              </DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => setScale(2)}>
-                200%
-              </DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => setScale(2.5)}>
-                250%
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          <Button
-            onClick={() => setRotation((prev) => prev + 90)}
-            variant="ghost"
-            aria-label="rotate 90 degrees"
-          >
-            <RotateCw className="h-4 w-4" />
-          </Button>
-
-          <PdfFullscreen fileUrl={url} />
-        </div>
-      </div>
-
-      <div className="flex-1 w-full max-h-screen">
-      <SimpleBar autoHide={false} className="max-h-[calc(100vh-10rem)]"> 
-          <div ref={ref}>
-            <Document
-            loading={
-              <div className='flex justify-center'>
-                <Loader2 className='my-24 h-6 w-6 animate-spin' />
-              </div>
-            }
-            onLoadError={() => {
-              toast({
-                title: 'Error loading PDF',
-                description: 'Please try again later',
-                variant: 'destructive',
-              })
-            }}
-              onLoadSuccess={onDocumentLoadSuccess}
-              file={url}
-              className="max-h-full"
-             
+            <Button
+              onClick={() => setRotation((prev) => prev + 90)}
+              variant="ghost"
+              aria-label="rotate 90 degrees"
             >
-            {isLoading && renderedScale ? (
+              <RotateCw className="h-4 w-4" />
+            </Button>
+
+            <PdfFullscreen fileUrl={url} />
+          </div>
+        </div>
+
+        <div className="flex-1 w-full max-h-screen">
+          <SimpleBar autoHide={false} className="max-h-[calc(100vh-10rem)]">
+            <div ref={ref}>
+              <Document
+                loading={
+                  <div className='flex justify-center'>
+                    <Loader2 className='my-24 h-6 w-6 animate-spin' />
+                  </div>
+                }
+                onLoadError={() => {
+                  toast({
+                    title: 'Error loading PDF',
+                    description: 'Please try again later',
+                    variant: 'destructive',
+                  })
+                }}
+                onLoadSuccess={onDocumentLoadSuccess}
+                file={url}
+                className="max-h-full"
+
+              >
+                {isLoading && renderedScale ? (
+                  <Page
+                    width={width ? width : 1}
+                    pageNumber={currPage}
+                    scale={scale}
+                    rotate={rotation}
+                    key={`@${currPage}-${scale}-${rotation}`}
+
+                  />
+                ) : null}
+
                 <Page
+                  className={cn(isLoading ? "hidden" : "")}
                   width={width ? width : 1}
                   pageNumber={currPage}
                   scale={scale}
                   rotate={rotation}
-                  key={`@${currPage}-${scale}-${rotation}`}
-                  
-                />
-              ) : null} 
+                  key={`@${currPage}-${scale}-${rotation}-2`}
 
-              <Page
-                className={cn(isLoading ? "hidden" : "")}
-                width={width ? width : 1}
-                pageNumber={currPage}
-                scale={scale}
-                rotate={rotation}
-                key={`@${currPage}-${scale}-${rotation}-2`}
-                
-                loading={
-                  <div className="flex justify-center">
-                    <Loader2 className="my-24 h-6 w-6 animate-spin" />
-                  </div>
-                }
-                onRenderSuccess={() => setRenderedScale(scale)}
-              />
-            </Document>
-          </div>
-        </SimpleBar> 
+                  loading={
+                    <div className="flex justify-center">
+                      <Loader2 className="my-24 h-6 w-6 animate-spin" />
+                    </div>
+                  }
+                  onRenderSuccess={() => setRenderedScale(scale)}
+                />
+              </Document>
+            </div>
+          </SimpleBar>
+        </div>
       </div>
     </div>
   );

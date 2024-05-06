@@ -1,6 +1,5 @@
 
 import { createFile, fetchCurrentPDF, updateUploadStatus } from '@/lib/actions/file.actions';
-import { currentUser } from '@clerk/nextjs'
 import {
     createUploadthing,
     type FileRouter,
@@ -10,22 +9,23 @@ import { PDFLoader } from 'langchain/document_loaders/fs/pdf'
 import { OpenAIEmbeddings } from '@langchain/openai'
 import { PineconeStore } from '@langchain/pinecone'
 import { getPineconeClient } from '@/lib/pinecone'
-import { subscriptionProfile } from '@/lib/profile/subscription';
+import { isUserSubscribed, subscriptionProfile } from '@/lib/profile/subscription';
 import { PLANS } from '@/config/plans';
+import { auth } from '@clerk/nextjs/server';
 
 
 const f = createUploadthing()
 
 const middleware = async () => {
 
-    const user = await currentUser();
+    const { userId } = auth();
 
-    if (!user || !user?.id) throw new Error('Unauthorized')
+    if (!userId) throw new Error('Unauthorized')
 
-    const subscriptionPlan = await subscriptionProfile()
+    const isSubscribed = await isUserSubscribed()
 
 
-    return { userId: user.id, subscriptionPlan }
+    return { userId, isSubscribed }
 }
 
 const onUploadComplete = async ({
@@ -81,8 +81,7 @@ const onUploadComplete = async ({
 
         console.log(pagesAmt)
 
-        const { subscriptionPlan } = metadata
-        const isSubscribed = (subscriptionPlan?.isSubscribed && subscriptionPlan?.isPro)
+        const { isSubscribed } = metadata
 
         const isProExceeded =
             pagesAmt >
@@ -101,7 +100,6 @@ const onUploadComplete = async ({
                 newStatus: 'FAILED',
             });
         }
-
         // vectorize and index entire document
         const pinecone = await getPineconeClient()
         const pineconeIndex = pinecone.Index('summaq')

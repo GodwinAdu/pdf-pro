@@ -1,6 +1,6 @@
 import ConversationWrapper from "@/components/conversation/ConversationWrapper";
 import Sidebar from "@/components/sidebar/Sidebar";
-import { currentUser } from "@clerk/nextjs";
+import { currentUser } from "@clerk/nextjs/server";
 import React from "react";
 
 const page = async () => {

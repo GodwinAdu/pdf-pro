@@ -1,24 +1,67 @@
-import mongoose from "mongoose";
 
-const UserSchema = new mongoose.Schema({
-    id: String,
-    name:String,
+import { Schema, models, model, Document } from "mongoose";
+
+interface Plan {
+    amount: number;
+    planName: string;
+    subscriptionType: string;
+    subscriptionStart: string;
+    subscriptionEnd: string;
+}
+
+export interface IUser extends Document {
+    clerkId: string;
+    fullName: string;
+    email: string;
+    phone: string;
+    freeAiChat: number;
+    freePdfChat: number;
+    plan: Plan;
+    createdAt?: Date;
+    updatedAt?: Date;
+}
+
+
+const UserSchema = new Schema<IUser>({
+    clerkId: {
+        type: String,
+        required: true
+    },
+    fullName: String,
     email: {
         type: String,
         unique: true,
     },
-    // phone:String,
-    quizPay:{
-        type:Boolean,
-        default: false
+    phone: String,
+    freeAiChat: {
+        type: Number,
+        default: 0
     },
-    duesPay:{
-        type:Boolean,
-        default:false
+    freePdfChat: {
+        type: Number,
+        default: 0
     },
+    plan: {
+        amount: {
+            type: Number,
+            default: 0
+        },
+        planName: String,
+        subscriptionType: String,
+        subscriptionStart: String,
+        subscriptionEnd: String,
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now,
+    },
+    updatedAt: {
+        type: Date,
+        default: Date.now,
+    }
 });
 
 
-const User = mongoose.models.User || mongoose.model("User", UserSchema);
+const User = models.User || model("User", UserSchema);
 
 export default User;

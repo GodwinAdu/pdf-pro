@@ -56,11 +56,11 @@ export async function fetchUserFiles({ userId }: Props) {
             throw new Error("No files found")
         }
 
-        return files
+        return JSON.parse(JSON.stringify(files))
 
     } catch (error: any) {
         console.error("Error fetching files from the database:", error);
-    throw new Error("Unable to fetch user files from the database");
+        throw new Error("Unable to fetch user files from the database");
     }
 }
 
@@ -76,7 +76,7 @@ export async function fetchFileByKey({ key, userId }: FetchFileKeyProps) {
         if (!file) {
             throw new Error("File doesnt exist")
         }
-        return file;
+        return JSON.parse(JSON.stringify(file));
     } catch (error: any) {
         console.log("cannot fetch file by key", error)
     }
@@ -90,26 +90,26 @@ interface FetchFileIdProps {
 export async function fetchFileById({ id, userId }: FetchFileIdProps) {
     await connectToDB();
     try {
-        const file = await File.findOne({ _id:id, userId });
+        const file = await File.findOne({ _id: id, userId });
 
         if (!file) {
-            return {status: "PENDING" as const}
+            return { status: "PENDING" as const }
         };
 
-        return file
-       
+        return JSON.parse(JSON.stringify(file))
+
 
     } catch (error: any) {
         console.log("cannot fetch file by key", error)
     }
 }
 
-interface fetchPdfProps{
-    id:string;
-    userId:string
+interface fetchPdfProps {
+    id: string;
+    userId: string
 }
 
-export async function fetchPDF({ id, userId }:fetchPdfProps) {
+export async function fetchPDF({ id, userId }: fetchPdfProps) {
     await connectToDB();
     try {
         console.log(id, userId)
@@ -122,31 +122,31 @@ export async function fetchPDF({ id, userId }:fetchPdfProps) {
             throw new Error("File not found or not authorized.");
         }
 
-        return getFile;
+        return JSON.parse(JSON.stringify(getFile));
 
     } catch (error: any) {
-        console.log("Couldnt fetch file from DB",error);
+        console.log("Couldnt fetch file from DB", error);
         throw error;
     }
 }
 
-interface CurrentProps{
-    key:string
+interface CurrentProps {
+    key: string
 }
-export async function fetchCurrentPDF({key}:CurrentProps) {
+export async function fetchCurrentPDF({ key }: CurrentProps) {
     await connectToDB();
     try {
-        
+
         const getFile = await File.findOne({ key });
 
         if (!getFile) {
             throw new Error("File not found or not authorized.");
         }
 
-        return getFile;
+        return JSON.parse(JSON.stringify(getFile));
 
     } catch (error: any) {
-        console.log("Couldnt fetch file from DB",error);
+        console.log("Couldnt fetch file from DB", error);
         throw error;
     }
 }
@@ -169,17 +169,17 @@ export async function deleteFile({ userId, id }: deleteFileProps) {
         if (!deletedFile) {
             throw new Error("File not found or not authorized for deletion.");
         }
-       
-         // Delete data from pinecode vector database with delete file id
-         const pc = await getPineconeClient();
-         const pinecone = pc.index("summaq");
-         await pinecone.namespace(id).deleteAll();
-         
 
-         //Delete all message with delete file id
-        await Message.deleteMany({fileId:id})
+        // Delete data from pinecode vector database with delete file id
+        const pc = await getPineconeClient();
+        const pinecone = pc.index("summaq");
+        await pinecone.namespace(id).deleteAll();
 
-        return deletedFile; // Return the deleted file or a success message.
+
+        //Delete all message with delete file id
+        await Message.deleteMany({ fileId: id })
+
+        return JSON.parse(JSON.stringify(deletedFile)); // Return the deleted file or a success message.
 
     } catch (error: any) {
         console.error("Error while deleting the file:", error);
@@ -188,27 +188,26 @@ export async function deleteFile({ userId, id }: deleteFileProps) {
 }
 
 
-interface statusProps{
-    fileId:string;
-    newStatus:string
+interface statusProps {
+    fileId: string;
+    newStatus: string
 }
-export async function  updateUploadStatus({fileId, newStatus}:statusProps) {
+export async function updateUploadStatus({ fileId, newStatus }: statusProps) {
     await connectToDB();
-  
+
     try {
-      const updatedFile = await File.findByIdAndUpdate(
-        fileId,
-        { uploadStatus: newStatus },
-        { new: true }
-      );
-  
-      if (!updatedFile) {
-        throw new Error('File not found');
-      }
-  
-      return updatedFile;
+        const updatedFile = await File.findByIdAndUpdate(
+            fileId,
+            { uploadStatus: newStatus },
+            { new: true }
+        );
+
+        if (!updatedFile) {
+            throw new Error('File not found');
+        }
+
+        return JSON.parse(JSON.stringify(updatedFile));
     } catch (error) {
-      throw error;
+        throw error;
     }
-  };
-  
+};

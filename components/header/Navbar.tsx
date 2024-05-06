@@ -5,7 +5,8 @@ import { buttonVariants } from "../ui/button";
 import { ArrowRight } from "lucide-react";
 import UserAccountNav from "../UserAccountNav";
 import MobileNav from "./MobileNav";
-import { SignIn, SignedIn, UserButton, currentUser } from "@clerk/nextjs";
+import { SignIn, SignedIn, UserButton, } from "@clerk/nextjs";
+import { currentUser } from "@clerk/nextjs/server";
 
 const Navbar = async () => {
   const user = await currentUser();
@@ -43,15 +44,6 @@ const Navbar = async () => {
                     Pricing
                   </Link>
                   <Link
-                    href="/blogs"
-                    className={buttonVariants({
-                      variant: "ghost",
-                      size: "sm",
-                    })}
-                  >
-                    Blogs
-                  </Link>
-                  <Link
                     href="/sign-in"
                     className={buttonVariants({
                       variant: "ghost",
@@ -71,7 +63,7 @@ const Navbar = async () => {
                 </>
               ) : (
                 <>
-                 <Link
+                  <Link
                     href="/dashboard"
                     className={buttonVariants({
                       variant: "ghost",
@@ -87,25 +79,16 @@ const Navbar = async () => {
                       size: "sm",
                     })}
                   >
-                    Chat AI
+                    Jutech AI
                   </Link>
                   <Link
-                    href="/library"
+                    href="/projects"
                     className={buttonVariants({
                       variant: "ghost",
                       size: "sm",
                     })}
                   >
-                    Library
-                  </Link>
-                  <Link
-                    href="/blogs"
-                    className={buttonVariants({
-                      variant: "ghost",
-                      size: "sm",
-                    })}
-                  >
-                    Blogs
+                    projects
                   </Link>
                   <Link
                     href="/pricing"
@@ -118,7 +101,7 @@ const Navbar = async () => {
                   </Link>
 
                   <SignedIn>
-                    <UserButton afterSignOutUrl="/" />
+                    <UserButton afterSignOutFallbackUrl="/" />
                   </SignedIn>
                 </>
               )}

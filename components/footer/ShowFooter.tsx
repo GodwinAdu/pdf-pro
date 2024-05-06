@@ -9,7 +9,8 @@ const ShowFooter = () => {
   const show =
     pathname.includes("/chat-ai") ||
     pathname.includes("/dashboard") ||
-    pathname.includes("/quiz");
+    pathname.includes("/projects") ||
+    pathname.includes("/pricing");
   return (
     <>
       {!show && (

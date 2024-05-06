@@ -10,9 +10,10 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { PLANS } from '@/config/plans'
+import { currentProfile } from '@/lib/profile/currentProfile'
 
 import { cn } from '@/lib/utils'
-import { currentUser } from '@clerk/nextjs'
+import { currentUser } from '@clerk/nextjs/server'
 
 import {
   ArrowRight,
@@ -21,11 +22,15 @@ import {
   Minus,
 } from 'lucide-react'
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
 
 const Page = async () => {
- 
-  const user = await currentUser()
 
+  const user = await currentUser();
+  if (!user) redirect("/")
+
+  const profile = await currentProfile();
+  if (!profile) redirect("/")
   const pricingItems = [
     {
       plan: 'Free',
@@ -33,12 +38,12 @@ const Page = async () => {
       quota: PLANS.find((p) => p.slug === 'free')!.quota,
       features: [
         {
-          text: '10 pages per PDF',
+          text: '5 pages per PDF',
           footnote:
             'The maximum amount of pages per PDF-file.',
         },
         {
-          text: '4MB file size limit',
+          text: '2MB file size limit',
           footnote:
             'The maximum file size of a single PDF file.',
         },
@@ -68,7 +73,7 @@ const Page = async () => {
       quota: PLANS.find((p) => p.slug === 'pro')!.quota,
       features: [
         {
-          text: '25 pages per PDF',
+          text: '20 pages per PDF',
           footnote:
             'The maximum amount of pages per PDF-file.',
         },
@@ -130,7 +135,7 @@ const Page = async () => {
 
   return (
     <>
-      <MaxWidthWrapper className='mb-8 mt-24 text-center '>
+      <MaxWidthWrapper className='mb-8 mt-4 text-center '>
         <div className='mx-auto mb-10 sm:max-w-lg max-w-5xl'>
           <h1 className='text-6xl font-bold sm:text-7xl'>
             Pricing
@@ -141,7 +146,7 @@ const Page = async () => {
           </p>
         </div>
 
-        <div className='pt-12 grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-3'>
+        <div className='pt-4 grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-3'>
           <TooltipProvider>
             {pricingItems.map(
               ({ plan, tagline, quota, features }) => {
@@ -150,7 +155,7 @@ const Page = async () => {
                     (p) => p.slug === plan.toLowerCase()
                   )?.price.amount || 0
 
-                  const isProOrForeverPlan = plan === 'Pro' || plan === 'Forever';
+                const isProOrForeverPlan = plan === 'Pro' || plan === 'Forever';
 
                 return (
                   <div
@@ -168,7 +173,7 @@ const Page = async () => {
                     )}>
                     {isProOrForeverPlan && (
                       <div className={cn('absolute -top-5 left-0 right-0 mx-auto w-32 rounded-full bg-gradient-to-r from-blue-600 to-cyan-600 px-3 py-2 text-sm font-medium text-white',
-                      {'bg-gradient-to-r from-green-600 to-cyan-600': plan === 'Forever'}
+                        { 'bg-gradient-to-r from-green-600 to-cyan-600': plan === 'Forever' }
                       )}>
                         Upgrade now
                       </div>
@@ -182,7 +187,7 @@ const Page = async () => {
                         {tagline}
                       </p>
                       <p className='my-5 font-display text-4xl font-semibold'>
-                       {plan === 'Forever' ? "Contact Us" : ` GH ${price}`}
+                        {plan === 'Forever' ? "Contact Us" : ` GH ${price}`}
                       </p>
                       <p className='text-gray-500'>
                         per month
@@ -274,8 +279,8 @@ const Page = async () => {
                           <ArrowRight className='h-5 w-5 ml-1.5' />
                         </Link>
                       ) : user ? (
-                        
-                        <UpgradeButton />
+
+                        <UpgradeButton plan={plan} profile={profile} />
                       ) : (
                         <Link
                           href='/sign-in'

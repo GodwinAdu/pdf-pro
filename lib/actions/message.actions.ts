@@ -55,7 +55,7 @@ export async function fetchPrevMessages({fileId}:{fileId:string}){
             fileId,
           }).sort({ createdAt: "desc" }).limit(6).exec();
 
-          return prevMessages;
+          return JSON.parse(JSON.stringify(prevMessages));
     } catch (error:any) {
         console.error('MongoDB Fetch Error:', error);
     }
@@ -94,7 +94,8 @@ export async function fetchMessages({ fileId, limit, cursor }:fetchMessagesProps
         };
         
     } catch (error) {
-      console.error('Mongoose Fetch Error:', error);
+      console.error('MessagesFetch Error:', error);
+      throw error;
     }
   }
   

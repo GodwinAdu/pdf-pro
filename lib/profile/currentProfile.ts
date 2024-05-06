@@ -1,16 +1,16 @@
-import { currentUser } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 import { fetchUser } from "../actions/user.actions";
+import { auth } from "@clerk/nextjs/server";
 
+export async function currentProfile() {
 
-export async function currentProfile(){
-    const user = await currentUser();
-    
-    if(!user) return redirect('/sign-in')
+    const { userId } = auth();
 
-    const profile = fetchUser({id:user?.id})
-    
-    if(!profile) return redirect('/auth-callback');
+    if (!userId) return redirect('/sign-in')
+
+    const profile = await fetchUser({ clerkId: userId })
+
+    if (!profile) return redirect('/auth-callback');
 
     return profile;
 }
