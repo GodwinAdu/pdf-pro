@@ -5,7 +5,8 @@ import React, { useState } from "react";
 import FeedbackModalComponent from "./FeedbackModalComponent";
 import FeedbackModalComponents from "./FeedbackModalComponents";
 import Link from "next/link";
-import {usePathname} from "next/navigation";
+import { usePathname } from "next/navigation";
+import { Setting } from "../Settings";
 
 const FeedbackModal = () => {
   const [activeModal, setActiveModal] = useState<string | null>(null);
@@ -79,6 +80,7 @@ const FeedbackModal = () => {
               >
                 Something else
               </button>
+              <Setting />
             </div>
 
             <div className="pt-2">

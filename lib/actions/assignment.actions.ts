@@ -1,47 +1,133 @@
 "use server"
-
-import { currentUser } from "@clerk/nextjs";
 import Assignment from "../models/Assignment.models";
 import { connectToDB } from "../mongoose";
+import { auth } from "@clerk/nextjs/server";
+import { getPrice } from "../utils";
+import { revalidatePath } from "next/cache";
 
 
 
 interface PostProps {
-    name: string;
+    fullname: string;
     email: string;
     phone: string;
-    problem: string;
+    problemType: string;
     question: string;
-    description: string;
+    description?: string;
     deadline: Date;
 }
 
-export async function postAssignment({
-    name,
-    email,
-    phone,
-    problem,
-    question,
-    description,
-    deadline
-}:PostProps) {
-    await connectToDB();
-    const user = await currentUser();
+export async function postAssignment(values: PostProps, path: string) {
     try {
+        const { fullname, email, phone, question, problemType, description, deadline } = values
+        await connectToDB();
+        const { userId } = auth();
+        const value = getPrice(problemType);
+        const price = parseFloat(value.replace(/\D/g, '')); // Removes all non-numeric characters
+
         const assignment = new Assignment({
-            userId:user?.id,
-            name,
+            userId,
+            fullname,
             email,
             phone,
-            problem,
+            problemType,
             question,
             description,
             deadline,
+            price,
         })
 
         await assignment.save();
+        revalidatePath(path);
 
     } catch (error: any) {
         console.log("Unable to send assignment", error)
+    }
+}
+
+/**
+ * Fetches all assignments from the database.
+ * 
+ * @returns An array of assignments, or an empty array if no assignments are found.
+ * @throws Error if an error occurs during the operation.
+ */
+
+export async function fetchAllAssignments(): Promise<any[]> {
+    try {
+        // Connect to the database
+        await connectToDB();
+
+        // Fetch all assignments
+        const assignments = await Assignment.find({});
+
+        // Check if assignments array is empty
+        if (!assignments || assignments.length === 0) {
+            return [];
+        }
+
+        // Return assignments after converting them to plain objects
+        return JSON.parse(JSON.stringify(assignments));
+    } catch (error) {
+        console.error("Unable to fetch assignments:", error);
+        throw error;
+    }
+};
+
+export async function fetchAssignmentById(id: string) {
+    try {
+        await connectToDB();
+        const assignment = await Assignment.findById(id);
+        if (!assignment) {
+            throw new Error("assignment not found");
+        };
+
+        return JSON.parse(JSON.stringify(assignment))
+    } catch (error) {
+        console.log("unable to fetch assignment", error);
+        throw error;
+    }
+}
+
+
+export async function updateAssignment(assignmentId: string, values: PostProps, path: string) {
+    try {
+        // Destructure values
+        const { fullname, email, phone, question, problemType, description, deadline } = values;
+
+        // Connect to the database
+        await connectToDB();
+
+        // Ensure user is authenticated
+        const { userId } = auth();
+
+        // Find and update or create the assignment
+        const updatedAssignment = await Assignment.findByIdAndUpdate(
+            assignmentId,
+            {
+                $set: {
+                    fullname,
+                    email,
+                    phone,
+                    question,
+                    problemType,
+                    description,
+                    deadline
+                }
+            },
+            {
+                new: true, // Return the updated document
+                upsert: true, // Create a new document if not found
+                setDefaultsOnInsert: true // Apply default values for new documents
+            }
+        );
+
+        if (!updatedAssignment) {
+            throw new Error("Failed to update or create assignment");
+        }
+        revalidatePath(path)
+        return JSON.parse(JSON.stringify(updatedAssignment));
+    } catch (error: any) {
+        console.error("Failed to update or create assignment:", error);
+        throw error;
     }
 }

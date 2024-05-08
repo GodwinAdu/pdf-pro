@@ -56,11 +56,12 @@ export async function isSubscriptionDue() {
     const { userId } = auth();
     const userDetails = await fetchUser({ clerkId: userId as string });
 
-    if (!userDetails) return redirect('/auth-callback');
-    const currentDate = new Date();
-    const subscriptionEnd = new Date(userDetails.plan.subscriptionEnd);
+    // if (!userDetails) return redirect('/auth-callback');
+    const now = new Date();
+    const currentDate = now.toISOString().slice(0, 10)
+    const subscriptionEnd = new Date(userDetails?.plan.subscriptionEnd);
 
-    return currentDate > subscriptionEnd;
+    return new Date(currentDate) > subscriptionEnd;
   } catch (error) {
     console.log("something went wrong", error)
     throw error;

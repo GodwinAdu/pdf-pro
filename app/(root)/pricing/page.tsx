@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/tooltip'
 import { PLANS } from '@/config/plans'
 import { currentProfile } from '@/lib/profile/currentProfile'
+import { isUserSubscribed } from '@/lib/profile/subscription'
 
 import { cn } from '@/lib/utils'
 import { currentUser } from '@clerk/nextjs/server'
@@ -31,6 +32,8 @@ const Page = async () => {
 
   const profile = await currentProfile();
   if (!profile) redirect("/")
+
+  const isSubscribed = await isUserSubscribed();
   const pricingItems = [
     {
       plan: 'Free',
@@ -140,7 +143,7 @@ const Page = async () => {
           <h1 className='text-6xl font-bold sm:text-7xl'>
             Pricing
           </h1>
-          <p className='mt-5 text-gray-600 sm:text-lg'>
+          <p className='mt-5 text-gray-600 dark:text-white/70 sm:text-lg'>
             Whether you&apos;re just trying out our service
             or need more, we&apos;ve got you covered.
           </p>
@@ -161,14 +164,14 @@ const Page = async () => {
                   <div
                     key={plan}
                     className={cn(
-                      'relative rounded-2xl bg-white shadow-lg',
+                      'relative rounded-2xl bg-white dark:bg-background shadow-lg',
                       {
                         'border-2 border-blue-600 shadow-blue-200':
                           plan === 'Pro',
                         'border-2 border-green-600 shadow-green-200':
                           plan === 'Forever',
-                        'border border-gray-200':
-                          plan === 'free',
+                        'border-2 border-gray-300 shadow-gray-200':
+                          plan === 'Free',
                       }
                     )}>
                     {isProOrForeverPlan && (
@@ -180,23 +183,23 @@ const Page = async () => {
                     )}
 
                     <div className='p-5'>
-                      <h3 className='my-3 text-center font-display text-3xl font-bold'>
+                      <h3 className='my-3 dark:text-black text-center font-display text-3xl font-bold'>
                         {plan}
                       </h3>
                       <p className='text-gray-500'>
                         {tagline}
                       </p>
                       <p className='my-5 font-display text-4xl font-semibold'>
-                        {plan === 'Forever' ? "Contact Us" : ` GH ${price}`}
+                        {plan === 'Forever' ? "Contact Us" : ` GH${price}`}
                       </p>
                       <p className='text-gray-500'>
                         per month
                       </p>
                     </div>
 
-                    <div className='flex h-20 items-center justify-center border-b border-t border-gray-200 bg-gray-50'>
+                    <div className='flex h-20 items-center justify-center border-b border-t border-gray-200 bg-gray-50 dark:bg-inherit'>
                       <div className='flex items-center space-x-1'>
-                        <p>
+                        <p className="text-muted-foreground">
                           {quota.toLocaleString()} PDFs/mo
                           included
                         </p>
@@ -206,8 +209,7 @@ const Page = async () => {
                             <HelpCircle className='h-4 w-4 text-zinc-500' />
                           </TooltipTrigger>
                           <TooltipContent className='w-80 p-2'>
-                            How many PDFs you can upload per
-                            month.
+                            {`You can upload ${quota.toLocaleString()} PDF per month`}
                           </TooltipContent>
                         </Tooltip>
                       </div>
@@ -266,30 +268,68 @@ const Page = async () => {
                     </ul>
                     <div className='border-t border-gray-200' />
                     <div className='p-5'>
-                      {plan === 'Free' ? (
-                        <Link
-                          href={
-                            user ? '/dashboard' : '/sign-in'
-                          }
-                          className={buttonVariants({
-                            className: 'w-full',
-                            variant: 'secondary',
-                          })}>
-                          {user ? 'Upgrade now' : 'Sign up'}
-                          <ArrowRight className='h-5 w-5 ml-1.5' />
-                        </Link>
-                      ) : user ? (
+                      {!isSubscribed ? (
+                        <>
+                          {plan === 'Free' ? (
+                            <Link
+                              href={
+                                user ? '/dashboard' : '/sign-in'
+                              }
+                              className={buttonVariants({
+                                className: 'w-full',
+                                variant: 'secondary',
+                              })}>
+                              {user ? 'Upgrade now' : 'Sign up'}
+                              <ArrowRight className='h-5 w-5 ml-1.5' />
+                            </Link>
+                          ) : user ? (
 
-                        <UpgradeButton plan={plan} profile={profile} />
+                            <UpgradeButton plan={plan} profile={profile} />
+                          ) : (
+                            <Link
+                              href='/sign-in'
+                              className={buttonVariants({
+                                className: 'w-full',
+                              })}>
+                              {user ? 'Upgrade now' : 'Sign up'}
+                              <ArrowRight className='h-5 w-5 ml-1.5' />
+                            </Link>
+                          )}
+                        </>
                       ) : (
-                        <Link
-                          href='/sign-in'
-                          className={buttonVariants({
-                            className: 'w-full',
-                          })}>
-                          {user ? 'Upgrade now' : 'Sign up'}
-                          <ArrowRight className='h-5 w-5 ml-1.5' />
-                        </Link>
+                        <>
+                          {plan === 'Free' ? (
+                            <Link
+                              href={
+                                user ? '/contact_us' : '/sign-in'
+                              }
+                              className={buttonVariants({
+                                className: 'w-full',
+                                variant: 'secondary',
+                              })}>
+                              {user ? 'Pro Activated' : 'Sign up'}
+                              <ArrowRight className='h-5 w-5 ml-1.5' />
+                            </Link>
+                          ) : user ? (
+
+                            <Link
+                              href='/contact_us'
+                              className={buttonVariants({
+                                className: 'w-full',
+                              })}>
+                              Contact Us
+                            </Link>
+                          ) : (
+                            <Link
+                              href='/sign-in'
+                              className={buttonVariants({
+                                className: 'w-full',
+                              })}>
+                              {user ? 'Upgrade Forever Mode' : 'Sign up'}
+                              <ArrowRight className='h-5 w-5 ml-1.5' />
+                            </Link>
+                          )}
+                        </>
                       )}
                     </div>
                   </div>

@@ -76,3 +76,28 @@ export async function updateUserSubscription({ id, amount, plan, period }: Subsc
         throw error; // Rethrow the error to be caught by the caller
     }
 }
+
+
+export async function updateUserSubscriptionEnd(userId:string) {
+    try {
+        const date = new Date()
+        const currentDate = date.toISOString().slice(0, 10);
+        await connectToDB();
+
+        const user = await User.findById(userId);
+
+        if (!user) {
+            throw new Error(`User with ID ${userId} not found`)
+        }
+        user.plan.amount = 0;
+        user.plan.planName = '';
+        user.plan.subscriptionType = '';
+        user.plan.subscriptionStart = '';
+        user.plan.subscriptionEnd = '';
+
+        await user.save();
+    } catch (error) {
+        console.log("Error updating user subscription end:", error);
+        throw error; // Rethrow the error to be caught by the caller
+    }
+}

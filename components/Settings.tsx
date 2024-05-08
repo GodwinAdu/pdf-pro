@@ -27,9 +27,12 @@ export function Setting() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <p className="flex gap-4 cursor-pointer ml-3">
-          <Settings /> Settings
-        </p>
+        <button
+          className="border-2 border-green-600 bg-green-500 text-sm md:text-md text-black p-2 rounded-full hover:bg-green-700 w-full flex justify-center items-center"
+        >
+          <Settings className="w-4 h-4 animate-spin mr-4" /> Settings
+        </button>
+
       </DialogTrigger>
       <DialogContent className="w-[96%] max-w-3xl">
         <DialogHeader>
@@ -69,24 +72,24 @@ export function Setting() {
         </div>
         <Separator />
         <DialogFooter>
-        <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button variant="destructive">Delete Account</Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    This action cannot be undone. This will permanently delete
-                    your account and remove your data from our servers.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <Button variant="destructive">Continue</Button>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive">Delete Account</Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action cannot be undone. This will permanently delete
+                  your account and remove your data from our servers.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <Button variant="destructive">Continue</Button>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </DialogFooter>
       </DialogContent>
     </Dialog>
