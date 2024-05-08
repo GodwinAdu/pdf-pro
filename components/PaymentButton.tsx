@@ -1,7 +1,6 @@
 "use client"
-
-import { IUser } from "@/lib/models/user.models";
 import { PaystackButton } from "react-paystack";
+import { AlertDialogCancel } from "./ui/alert-dialog";
 
 interface PaymentButtonProps {
   projectId: string;
@@ -42,7 +41,9 @@ const PaymentButton = ({ projectId, name, email, amount }: PaymentButtonProps) =
 
   return (
     <form onSubmit={handleSubmit}>
-      <PaystackButton {...componentProps} className="inline-block w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition-colors duration-300" />
+      <AlertDialogCancel>
+        <PaystackButton {...componentProps} className="inline-block w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition-colors duration-300" />
+      </AlertDialogCancel>
     </form>
   )
 }
