@@ -41,7 +41,7 @@ const PaymentButton = ({ projectId, name, email, amount }: PaymentButtonProps) =
 
   return (
     <form onSubmit={handleSubmit}>
-      <AlertDialogCancel>
+      <AlertDialogCancel className="w-full">
         <PaystackButton {...componentProps} className="inline-block w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition-colors duration-300" />
       </AlertDialogCancel>
     </form>

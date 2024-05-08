@@ -68,16 +68,7 @@ const MobileNav = ({ isAuth, name, email, imageUrl }: MobileNavProps) => {
                     Sign in
                   </Link>
                 </li>
-                <li className="my-3 h-px w-full bg-gray-300" />
-                <li>
-                  <Link
-                    onClick={() => closeOnCurrent("/blogs")}
-                    className="flex items-center w-full font-semibold"
-                    href="/blogs"
-                  >
-                    Blogs
-                  </Link>
-                </li>
+                <li className="my-3 h-px w-full bg-gray-300" /> 
                 <li className="my-3 h-px w-full bg-gray-300" />
                 <li>
                   <Link
@@ -95,16 +86,6 @@ const MobileNav = ({ isAuth, name, email, imageUrl }: MobileNavProps) => {
                   <Link
                     onClick={() => closeOnCurrent("/dashboard")}
                     className="flex items-center w-full font-semibold"
-                    href="/chat-ai"
-                  >
-                    Chat AI
-                  </Link>
-                </li>
-                <li className="my-3 h-px w-full bg-gray-300" />
-                <li>
-                  <Link
-                    onClick={() => closeOnCurrent("/dashboard")}
-                    className="flex items-center w-full font-semibold"
                     href="/dashboard"
                   >
                     Dashboard
@@ -113,23 +94,24 @@ const MobileNav = ({ isAuth, name, email, imageUrl }: MobileNavProps) => {
                 <li className="my-3 h-px w-full bg-gray-300" />
                 <li>
                   <Link
-                    onClick={() => closeOnCurrent("/dashboard")}
+                    onClick={() => closeOnCurrent("/chat-ai")}
                     className="flex items-center w-full font-semibold"
-                    href="/library"
+                    href="/chat-ai"
                   >
-                    Library
+                    Jutech Ai
                   </Link>
                 </li>
                 <li className="my-3 h-px w-full bg-gray-300" />
                 <li>
                   <Link
-                    onClick={() => closeOnCurrent("/pricing")}
+                    onClick={() => closeOnCurrent("/projects")}
                     className="flex items-center w-full font-semibold"
-                    href="/blogs"
+                    href="/projects"
                   >
-                    Blogs
+                    Projects
                   </Link>
                 </li>
+                <li className="my-3 h-px w-full bg-gray-300" />
                 <li>
                   <Link
                     onClick={() => closeOnCurrent("/pricing")}

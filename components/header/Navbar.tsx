@@ -88,7 +88,7 @@ const Navbar = async () => {
                       size: "sm",
                     })}
                   >
-                    projects
+                    Projects
                   </Link>
                   <Link
                     href="/pricing"
