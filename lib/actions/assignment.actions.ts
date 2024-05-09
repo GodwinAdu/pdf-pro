@@ -97,9 +97,6 @@ export async function updateAssignment(assignmentId: string, values: PostProps, 
         // Connect to the database
         await connectToDB();
 
-        // Ensure user is authenticated
-        const { userId } = auth();
-
         // Find and update or create the assignment
         const updatedAssignment = await Assignment.findByIdAndUpdate(
             assignmentId,
@@ -128,6 +125,26 @@ export async function updateAssignment(assignmentId: string, values: PostProps, 
         return JSON.parse(JSON.stringify(updatedAssignment));
     } catch (error: any) {
         console.error("Failed to update or create assignment:", error);
+        throw error;
+    }
+}
+
+
+export async function updateAssignmentPayment(assignmentId: string) {
+
+    try {
+        await connectToDB();
+        const updatedPayed = await Assignment.findById(assignmentId);
+
+        if (!updatedPayed) {
+            throw new Error('Couldnt updated assignment payment')
+        }
+        updatedPayed.payed = true;
+
+        await updatedPayed.save();
+
+    } catch (error) {
+        console.error("Error updating admin:", error);
         throw error;
     }
 }

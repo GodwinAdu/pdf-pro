@@ -35,15 +35,6 @@ const Navbar = async () => {
               {!user ? (
                 <>
                   <Link
-                    href="/pricing"
-                    className={buttonVariants({
-                      variant: "ghost",
-                      size: "sm",
-                    })}
-                  >
-                    Pricing
-                  </Link>
-                  <Link
                     href="/sign-in"
                     className={buttonVariants({
                       variant: "ghost",
@@ -63,6 +54,15 @@ const Navbar = async () => {
                 </>
               ) : (
                 <>
+                  <Link
+                    href="/admin"
+                    className={buttonVariants({
+                      variant: "ghost",
+                      size: "sm",
+                    })}
+                  >
+                    Admin
+                  </Link>
                   <Link
                     href="/dashboard"
                     className={buttonVariants({
@@ -101,7 +101,7 @@ const Navbar = async () => {
                   </Link>
 
                   <SignedIn>
-                    <UserButton afterSignOutFallbackUrl="/" />
+                    <UserButton afterSignOutUrl="/" />
                   </SignedIn>
                 </>
               )}

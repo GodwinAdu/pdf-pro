@@ -16,11 +16,15 @@ import { format } from "date-fns"
 import { fetchAllAssignments } from "@/lib/actions/assignment.actions"
 import { currentProfile } from "@/lib/profile/currentProfile";
 import PaymentButton from "@/components/PaymentButton";
+import PdfDownloadButton from "@/components/PdfDownloadButton";
+import PdfReadButton from "@/components/PdfReadButton";
 
 
 const page = async () => {
     const projects = await fetchAllAssignments();
     const profile = await currentProfile();
+
+
 
     return (
         <main className="mx-auto max-w-7xl p-2 md:p-10">
@@ -91,9 +95,7 @@ const page = async () => {
                                     </div>
                                     {project.payed ? (
                                         <>
-                                            <Link href={`/projects/${project._id}`} className={cn(buttonVariants({ size: "sm", variant: "secondary" }))}>
-                                                Read
-                                            </Link>
+                                           <PdfReadButton fileUrl={project?.fileUrl} />
                                         </>
                                     ) : (
                                         <div className="flex items-center gap-2 font-bold">
@@ -104,12 +106,7 @@ const page = async () => {
 
                                     {project.payed ? (
                                         <>
-                                            <Button
-                                                size="sm"
-                                                className="w-full bg-green-500 hover:bg-green-700"
-                                            >
-                                                <Download className="h-4 w-4" />
-                                            </Button>
+                                            <PdfDownloadButton fileUrl={project?.fileUrl} />
                                         </>
 
                                     ) : (
@@ -149,8 +146,8 @@ const page = async () => {
                                                         </AlertDialogDescription>
                                                     </AlertDialogHeader>
                                                     <AlertDialogFooter>
-                                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                        <PaymentButton projectId={project?._id} name={profile.fullname} email={profile.email} amount={project.price} />
+                                                        <AlertDialogCancel className="bg-red-500 hover:bg-red-700 text-white hover:text-white">Cancel</AlertDialogCancel>
+                                                        <PaymentButton projectId={project?._id} name={profile.fullname} email={profile.email} amount={project.price} fileUrl={project?.fileUrl} />
                                                     </AlertDialogFooter>
                                                 </AlertDialogContent>
                                             </AlertDialog>

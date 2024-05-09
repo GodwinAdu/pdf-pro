@@ -10,6 +10,7 @@ export interface IAssignment extends Document {
     problemType: string;
     question: string;
     description?: string;
+    fileUrl:string;
     deadline: Date;
     createdAt?: Date;
     updateAt?: Date
