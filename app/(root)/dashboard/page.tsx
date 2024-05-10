@@ -21,7 +21,7 @@ const page = async () => {
 
   console.log(isSubscribed, "subscribed")
 
-  return <Dashboard isSubscribed={isSubscribed} />
+  return <Dashboard user={dbUser} isSubscribed={isSubscribed} />
 }
 
 export default page

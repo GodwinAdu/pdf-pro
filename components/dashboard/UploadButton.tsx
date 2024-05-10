@@ -10,16 +10,22 @@ import { useToast } from "../ui/use-toast";
 import { Progress } from "../ui/progress";
 import { useUploadThing } from "@/lib/uploadthing";
 import { trpc } from "@/app/_trpc/client";
+import { IUser } from "@/lib/models/user.models";
+import { PLANS } from "@/config/plans";
 
 const UploadDropzone = ({
   isSubscribed,
+  user,
+  setIsOpen
 }: {
-  isSubscribed: boolean
+  isSubscribed: boolean,
+  user: IUser,
+  setIsOpen: (v: boolean) => void
 }) => {
-  
+
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
-  
+
   const { toast } = useToast();
   const router = useRouter();
   const { startUpload } = useUploadThing(
@@ -28,7 +34,7 @@ const UploadDropzone = ({
 
   const { mutate: startPolling } = trpc.getFile.useMutation({
     onSuccess: (file) => {
-      console.log("first file",file)
+      console.log("first file", file)
       router.push(`/dashboard/${file?._id}`);
     },
     retry: true,
@@ -56,6 +62,17 @@ const UploadDropzone = ({
       multiple={false}
       onDrop={async (acceptedFile) => {
         setIsUploading(true);
+        if ((user.plan.planName === "pro" && user.numberUpload >= PLANS.find((plan) => plan.name === 'Pro')!.quota) ||
+          (user.plan.planName === "free" && user.numberUpload >= PLANS.find((plan) => plan.name === 'Free')!.quota)
+        ) {
+          setIsOpen(false)
+          return toast({
+            title: "Opps!!. Reached Upload Limit",
+            description: "Youve reached monthly qouta limit, Upgrade your account to upload more PDF",
+            variant: "destructive",
+          });
+        }
+
 
         const progressInterval = startSimulatedProgress();
 
@@ -74,7 +91,7 @@ const UploadDropzone = ({
 
         const key = fileResponse?.key;
 
-        console.log("key",key)
+        console.log("key", key)
 
         if (!key) {
           return toast({
@@ -155,9 +172,11 @@ const UploadDropzone = ({
 };
 
 const UploadButton = ({
-  isSubscribed
+  isSubscribed,
+  user
 }: {
-  isSubscribed: boolean
+  isSubscribed: boolean,
+  user: IUser
 }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   return (
@@ -173,7 +192,7 @@ const UploadButton = ({
         <Button>Upload PDF</Button>
       </DialogTrigger>
       <DialogContent>
-        <UploadDropzone isSubscribed={isSubscribed} />
+        <UploadDropzone user={user} isSubscribed={isSubscribed} setIsOpen={setIsOpen} />
       </DialogContent>
     </Dialog>
   );

@@ -128,4 +128,50 @@ const PdfDownloadButton = ({ fileUrl }: { fileUrl: string }) => {
     )
 }
 
-export default PdfDownloadButton
+export default PdfDownloadButton;
+
+
+
+
+// const handleDownloadDocx = async (event: any) => {
+//     event.preventDefault();
+
+//     try {
+//         // Load the PDF
+//         const pdf = await pdfjs.getDocument(fileUrl).promise;
+//         const numPages = pdf.numPages;
+
+//         // Extract text from each page and create a separate Word document for each page
+//         for (let pageNumber = 1; pageNumber <= numPages; pageNumber++) {
+//             const page = await pdf.getPage(pageNumber);
+//             const textContent = await page.getTextContent();
+//             const pageText = textContent.items
+//                 .map((item: any) => (typeof item === "string" ? item : item.str))
+//                 .join(" ");
+
+//             // Create a new Word document for the current page
+//             const doc = new Document({
+//                 sections: [{
+//                     properties: {},
+//                     children: [
+//                         new Paragraph({
+//                             children: [new TextRun(pageText)]
+//                         })
+//                     ]
+//                 }]
+//             });
+
+//             // Generate a unique filename using timestamp and page number
+//             const timestamp = new Date().toISOString().replace(/[-:.]/g, ''); // Remove special characters from ISO timestamp
+//             const filename = `document_${pageNumber}_${timestamp}.docx`;
+
+//             // Save the current page as a Word document
+//             const docxBlob = await Packer.toBlob(doc);
+//             saveAs(docxBlob, filename);
+
+//             console.log(`Downloaded PDF page ${pageNumber} as Word document: ${filename}`);
+//         }
+//     } catch (error) {
+//         console.error("Error converting PDF to Word document:", error);
+//     }
+// }

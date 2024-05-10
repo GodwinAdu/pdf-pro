@@ -50,7 +50,7 @@ interface SubscriptiionProps {
     id: string;
     amount: number;
     plan: string;
-    period:'monthly'|'6-months'|'yearly';
+    period: 'monthly' | '6-months' | 'yearly';
 }
 
 export async function updateUserSubscription({ id, amount, plan, period }: SubscriptiionProps) {
@@ -78,7 +78,7 @@ export async function updateUserSubscription({ id, amount, plan, period }: Subsc
 }
 
 
-export async function updateUserSubscriptionEnd(userId:string) {
+export async function updateUserSubscriptionEnd(userId: string) {
     try {
         const date = new Date()
         const currentDate = date.toISOString().slice(0, 10);
@@ -98,6 +98,25 @@ export async function updateUserSubscriptionEnd(userId:string) {
         await user.save();
     } catch (error) {
         console.log("Error updating user subscription end:", error);
+        throw error; // Rethrow the error to be caught by the caller
+    }
+}
+export async function updateUserUpload(userId: string) {
+    try {
+
+        await connectToDB();
+
+        const user = await User.findById(userId);
+
+        if (!user) {
+            throw new Error(`User with ID ${userId} not found`)
+        }
+        user.numberUpload += 1;
+
+        await user.save();
+
+    } catch (error) {
+        console.log("Error updating user Upload number:", error);
         throw error; // Rethrow the error to be caught by the caller
     }
 }

@@ -19,12 +19,13 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { GetHelpButton } from "../modal/GetHelpButton";
+import { IUser } from "@/lib/models/user.models";
 
-const Dashboard = ({isSubscribed}:{isSubscribed:boolean}) => {
+const Dashboard = ({ isSubscribed, user }: { isSubscribed: boolean, user: IUser }) => {
   const [currentlyDeletingFile, setCurrentlyDeletingFile] = useState<
     string | null
   >(null);
-  
+
 
   console.log(isSubscribed)
   const utils = trpc.useUtils();
@@ -47,7 +48,7 @@ const Dashboard = ({isSubscribed}:{isSubscribed:boolean}) => {
       <div className="mt-2 flex flex-col items-start justify-between gap-4 border-b border-gray-200 pb-5 sm:flex-row sm:items-center sm:gap-0">
         <h1 className="mb-3 font-bold text-2xl md:text-5xl text-gray-900">My Files</h1>
         <div className="flex gap-4 px-2">
-          <UploadButton isSubscribed={isSubscribed} />
+          <UploadButton user={user} isSubscribed={isSubscribed} />
           <GetHelpButton />
         </div>
       </div>

@@ -9,9 +9,10 @@ import { PDFLoader } from 'langchain/document_loaders/fs/pdf'
 import { OpenAIEmbeddings } from '@langchain/openai'
 import { PineconeStore } from '@langchain/pinecone'
 import { getPineconeClient } from '@/lib/pinecone'
-import { isUserSubscribed, subscriptionProfile } from '@/lib/profile/subscription';
+import { isUserSubscribed } from '@/lib/profile/subscription';
 import { PLANS } from '@/config/plans';
 import { auth } from '@clerk/nextjs/server';
+import { fetchUser, updateUserUpload } from '@/lib/actions/user.actions';
 
 
 const f = createUploadthing()
@@ -40,6 +41,9 @@ const onUploadComplete = async ({
     }
 }) => {
 
+    const { userId } = metadata
+    const user = await fetchUser({ clerkId: userId });
+
     const data = {
         key: file.key,
         name: file.name,
@@ -49,15 +53,13 @@ const onUploadComplete = async ({
     };
 
     try {
-        await createFile(data)
-    } catch (error: any) {
+
+        await updateUserUpload(user?._id);
+        await createFile(data);
+
+    } catch (error) {
         console.log("couldnt create file to DB")
-        throw error
     }
-
-
-
-
 
     const fetchPdf = await fetchCurrentPDF({ key: file.key })
     try {
@@ -86,10 +88,12 @@ const onUploadComplete = async ({
         const isProExceeded =
             pagesAmt >
             PLANS.find((plan) => plan.name === 'Pro')!.pagesPerPdf
+        console.log(isProExceeded, "pro exceeded")
         const isFreeExceeded =
             pagesAmt >
             PLANS.find((plan) => plan.name === 'Free')!
                 .pagesPerPdf
+        console.log(isFreeExceeded, "is free exceeded")
 
         if (
             (isSubscribed && isProExceeded) ||
@@ -103,7 +107,7 @@ const onUploadComplete = async ({
         // vectorize and index entire document
         const pinecone = await getPineconeClient()
         const pineconeIndex = pinecone.Index('summaq')
-       
+
 
         const embeddings = new OpenAIEmbeddings({
             openAIApiKey: process.env.OPENAI_API_KEY,
@@ -123,7 +127,7 @@ const onUploadComplete = async ({
             fileId: fetchPdf._id,
             newStatus: 'SUCCESS',
         });
-        
+
     } catch (err: any) {
         console.error('Error in the try block:', err);
         await updateUploadStatus({

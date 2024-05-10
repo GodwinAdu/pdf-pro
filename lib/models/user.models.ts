@@ -17,6 +17,7 @@ export interface IUser extends Document {
     freeAiChat: number;
     freePdfChat: number;
     plan: Plan;
+    numberUpload:number;
     createdAt?: Date;
     updatedAt?: Date;
 }
@@ -46,10 +47,17 @@ const UserSchema = new Schema<IUser>({
             type: Number,
             default: 0
         },
-        planName: String,
+        planName: {
+            type:String,
+            default:"free"
+        },
         subscriptionType: String,
         subscriptionStart: String,
         subscriptionEnd: String,
+    },
+    numberUpload:{
+        type:Number,
+        default:0
     },
     createdAt: {
         type: Date,
