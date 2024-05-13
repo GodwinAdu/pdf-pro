@@ -21,7 +21,7 @@ const page = async () => {
         <h1 className="mb-3 font-bold text-2xl md:text-5xl text-gray-900">Text Manupulation</h1>
       </div>
       <Tabs defaultValue="summarizer" className="w-full">
-        <div className="overflow-x-auto bg-white/75 backdrop-blur-lg max-w-5xl mx-auto">
+        <div className="overflow-x-auto bg-white/75 backdrop-blur-lg max-w-5xl py-1">
           <TabsList className="">
             <TabsTrigger value="summarizer"><BookOpenCheck className="w-4 h-4 mr-1" />summarizer</TabsTrigger>
             <TabsTrigger value="paraphrase"><BookType className="w-4 h-4 mr-1" />paraphrase</TabsTrigger>

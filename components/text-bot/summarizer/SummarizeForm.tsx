@@ -124,13 +124,13 @@ const SummarizeForm = ({ type, user }: { type: string, user: IUser }) => {
 
     async function onSubmit(data: z.infer<typeof FormSchema>) {
         try {
-            if (user.plan.planName === "free") {
-                return toast({
-                    title: "Opps!. Only for Pro Users",
-                    description: "Please upgrade now to continue this offer. Thank you😃",
-                    variant: "destructive"
-                })
-            }
+            // if (user.plan.planName === "free") {
+            //     return toast({
+            //         title: "Opps!. Only for Pro Users",
+            //         description: "Please upgrade now to continue this offer. Thank you😃",
+            //         variant: "destructive"
+            //     })
+            // }
             setIsLoading(true)
             if (type === "summarize") {
                 const value = await summarizeText(data.text);
@@ -284,9 +284,9 @@ const SummarizeForm = ({ type, user }: { type: string, user: IUser }) => {
                             <div className='w-full mt-16 flex justify-center'>
                                 <div className='flex flex-col items-center gap-2'>
                                     <Loader2 className='h-6 w-6 animate-spin text-zinc-800' />
-                                    <h3 className='font-semibold text-lg'>Please Wait ...
+                                    <h3 className='font-semibold md:text-lg text-md'>Please Wait ...
                                     </h3>
-                                    <p>Result will be shown here soon... 😋😋😋</p>
+                                    <p className="text-xs md:text-sm">Result will be shown here soon... 😋😋😋</p>
                                 </div>
                             </div>
                         ) : (
@@ -307,9 +307,9 @@ const SummarizeForm = ({ type, user }: { type: string, user: IUser }) => {
                             <div className='w-full mt-16 flex justify-center'>
                                 <div className='flex flex-col items-center gap-2'>
                                     <Loader2 className='h-6 w-6 animate-spin text-zinc-800' />
-                                    <h3 className='font-semibold text-lg'>Please Wait ...
+                                    <h3 className='font-semibold md:text-lg text-md'>Please Wait ...
                                     </h3>
-                                    <p>Result will be shown here soon... 😋😋😋</p>
+                                    <p className="text-xs md:text-sm">Result will be shown here soon... 😋😋😋</p>
                                 </div>
                             </div>
                         ) : (
@@ -328,13 +328,16 @@ const SummarizeForm = ({ type, user }: { type: string, user: IUser }) => {
                             <div className='w-full mt-16 flex justify-center'>
                                 <div className='flex flex-col items-center gap-2'>
                                     <Loader2 className='h-6 w-6 animate-spin text-zinc-800' />
-                                    <h3 className='font-semibold text-lg'>Please Wait ...
+                                    <h3 className='font-semibold md:text-lg text-md'>Please Wait ...
                                     </h3>
-                                    <p>Result will be shown here soon... 😋😋😋</p>
+                                    <p className="text-xs md:text-sm">Result will be shown here soon... 😋😋😋</p>
                                 </div>
                             </div>
                         ) : (
                             <div className="overflow-y-auto max-h-[240px]">
+                                {improvement && improvement.length === 0 && (
+                                    <p className="p-2 text-sm space-y-2 text-center">There Is No Text Error. It looks perfect. 😍😍😘</p>
+                                )}
                                 {improvement.map((data, index) => (
                                     <div key={index} className="flex flex-col gap-2">
                                         <div className="p-2 text-sm flex gap-1 ">Suggestion:{data.suggestions.map((v) => <p className="text-green-500 underline">{v}</p>)}</div>
@@ -356,15 +359,15 @@ const SummarizeForm = ({ type, user }: { type: string, user: IUser }) => {
                             <div className='w-full mt-16 flex justify-center'>
                                 <div className='flex flex-col items-center gap-2'>
                                     <Loader2 className='h-6 w-6 animate-spin text-zinc-800' />
-                                    <h3 className='font-semibold text-lg'>Please Wait ...
+                                    <h3 className='font-semibold md:text-lg text-md'>Please Wait ...
                                     </h3>
-                                    <p>Result will be shown here soon... 😋😋😋</p>
+                                    <p className="text-xs md:text-sm">Result will be shown here soon... 😋😋😋</p>
                                 </div>
                             </div>
                         ) : (
                             <div className="overflow-y-auto max-h-[240px]">
                                 {grammar && grammar.length === 0 && (
-                                    <p className="p-2 text-sm space-y-2">There Is No Grammar Error. It looks perfect. 😍😍😘</p>
+                                    <p className="p-2 text-sm space-y-2 text-center">There Is No Grammar Error. It looks perfect. 😍😍😘</p>
                                 )}
                                 {grammar && grammar?.map((data, index) => (
                                     <div key={index} className="flex gap-4">
