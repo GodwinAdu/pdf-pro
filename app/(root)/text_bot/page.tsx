@@ -21,7 +21,7 @@ const page = async () => {
         <h1 className="mb-3 font-bold text-2xl md:text-5xl text-gray-900">Text Manupulation</h1>
       </div>
       <Tabs defaultValue="summarizer" className="w-full">
-        <div className="overflow-x-auto sticky -top-4 z-50 bg-white/75 backdrop-blur-lg max-w-5xl mx-auto">
+        <div className="overflow-x-auto bg-white/75 backdrop-blur-lg max-w-5xl mx-auto">
           <TabsList className="">
             <TabsTrigger value="summarizer"><BookOpenCheck className="w-4 h-4 mr-1" />summarizer</TabsTrigger>
             <TabsTrigger value="paraphrase"><BookType className="w-4 h-4 mr-1" />paraphrase</TabsTrigger>
@@ -31,28 +31,28 @@ const page = async () => {
         </div>
         <TabsContent value="summarizer">
           <Card className="">
-            <CardContent className="space-y-2">
+            <CardContent >
               <SummarizeForm user={user} type="summarize" />
             </CardContent>
           </Card>
         </TabsContent>
         <TabsContent value="paraphrase">
           <Card>
-            <CardContent className="space-y-2">
+            <CardContent >
               <SummarizeForm user={user} type="paraphrase" />
             </CardContent>
           </Card>
         </TabsContent>
         <TabsContent value="text-improvement">
           <Card>
-            <CardContent className="space-y-2">
+            <CardContent >
               <SummarizeForm user={user} type="improvement" />
             </CardContent>
           </Card>
         </TabsContent>
         <TabsContent value="grammar-error">
           <Card>
-            <CardContent className="space-y-2">
+            <CardContent >
               <SummarizeForm user={user} type="gec" />
             </CardContent>
           </Card>
