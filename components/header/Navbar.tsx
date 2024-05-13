@@ -1,11 +1,11 @@
 import Link from "next/link";
 import MaxWidthWrapper from "../common/MaxWidthWrapper";
-import { buttonVariants } from "../ui/button";
+import { Button, buttonVariants } from "../ui/button";
 
 import { ArrowRight } from "lucide-react";
 import UserAccountNav from "../UserAccountNav";
 import MobileNav from "./MobileNav";
-import { SignIn, SignedIn, UserButton, } from "@clerk/nextjs";
+import { SignInButton, SignUpButton, SignedIn, SignedOut, UserButton, } from "@clerk/nextjs";
 import { currentUser } from "@clerk/nextjs/server";
 
 const Navbar = async () => {
@@ -34,23 +34,23 @@ const Navbar = async () => {
             <div className="hidden items-center space-x-4 sm:flex">
               {!user ? (
                 <>
-                  <Link
-                    href="/sign-in"
-                    className={buttonVariants({
-                      variant: "ghost",
-                      size: "sm",
-                    })}
-                  >
-                    Sign in
-                  </Link>
-                  <Link
-                    href="/sign-up"
-                    className={buttonVariants({
-                      size: "sm",
-                    })}
-                  >
-                    Get started <ArrowRight className="ml-1.5 h-5 w-5" />
-                  </Link>
+                  <SignedOut>
+                    <SignInButton >
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                      >
+                        Sign in
+                      </Button>
+                    </SignInButton>
+                  </SignedOut>
+                  <SignedOut>
+                    <SignUpButton>
+                      <Button size="sm">
+                        Get started <ArrowRight className="ml-1.5 h-5 w-5" />
+                      </Button>
+                    </SignUpButton>
+                  </SignedOut>
                 </>
               ) : (
                 <>
@@ -73,13 +73,13 @@ const Navbar = async () => {
                     Dashboard
                   </Link>
                   <Link
-                    href="/chat-ai"
+                    href="/text_bot"
                     className={buttonVariants({
                       variant: "ghost",
                       size: "sm",
                     })}
                   >
-                    Jutech AI
+                    Text Bot
                   </Link>
                   <Link
                     href="/projects"

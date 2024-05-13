@@ -1,6 +1,6 @@
 import { Button, buttonVariants } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import { Download, Edit, File, Ghost, Loader2, MessageSquare, Plus } from "lucide-react"
+import { ArrowRight, Download, Edit, File, Ghost, Loader2, MessageSquare, Plus } from "lucide-react"
 import Link from "next/link"
 import {
     AlertDialog,
@@ -95,7 +95,7 @@ const page = async () => {
                                     </div>
                                     {project.payed ? (
                                         <>
-                                           <PdfReadButton fileUrl={project?.fileUrl} />
+                                            <PdfReadButton fileUrl={project?.fileUrl} />
                                         </>
                                     ) : (
                                         <div className="flex items-center gap-2 font-bold">
@@ -160,12 +160,13 @@ const page = async () => {
                     }
                 </ul >
             ) : (
-                <div className="mt-16 flex flex-col items-center gap-2">
+                <div className="mt-16 flex flex-col items-center mx-auto gap-4 max-w-md px-2">
                     <Ghost className="h-8 w-8 text-zinc-800" />
                     <h3 className="text-xl font-semi-bold">
                         Opps!, There&apos;s no project here
                     </h3>
-                    <p>let&apos;s upload your first PDF.</p>
+                    <p>How can we help you?.Is it Home work, Nursing care study, Research work, or what. please send us your request and we assist you!😋😋😋</p>
+                    <Link href="/projects/create" className={cn(buttonVariants({ size: "sm" }))}>Get Started <ArrowRight className="w-4 h-4 ml-2" /></Link>
                 </div>
             )
             }

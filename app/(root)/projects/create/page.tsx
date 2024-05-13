@@ -12,7 +12,7 @@ const page = async () => {
             <div className="mt-1 flex flex-col items-start justify-between gap-4 border-b border-gray-200 pb-5 sm:flex-row sm:items-center sm:gap-0">
                 <h1 className="mb-3 font-bold text-2xl md:text-5xl text-gray-900">Submit Request</h1>
             </div>
-            <Card className="w-full mt-2 p-4">
+            <Card className="w-full mt-2">
                 <CardContent>
                     <div className="">
                         <ProjectForm type="Create"  />

@@ -54,7 +54,7 @@ const PaymentButton = ({ projectId, name, email, amount, fileUrl }: PaymentButto
   };
 
   const subscriptionClose = () => {
-    alert('opps youve close it ')
+    alert('opps youve close it')
   };
 
 

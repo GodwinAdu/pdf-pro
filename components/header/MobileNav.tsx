@@ -5,7 +5,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import UserAccountNav from "../UserAccountNav";
-import { SignedIn, UserButton } from "@clerk/nextjs";
+import { SignInButton, SignUpButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import { Button } from "../ui/button";
 
 interface MobileNavProps {
   isAuth: boolean;
@@ -35,7 +36,7 @@ const MobileNav = ({ isAuth, name, email, imageUrl }: MobileNavProps) => {
     <div className="sm:hidden">
       <div className="flex items-center gap-4">
         <SignedIn>
-         <UserButton afterSignOutUrl="/" />
+          <UserButton afterSignOutUrl="/" />
         </SignedIn>
         <Menu
           onClick={toggleOpen}
@@ -49,24 +50,26 @@ const MobileNav = ({ isAuth, name, email, imageUrl }: MobileNavProps) => {
             {!isAuth ? (
               <>
                 <li>
-                  <Link
-                    onClick={() => closeOnCurrent("/sign-up")}
-                    className="flex items-center w-full font-semibold text-green-600"
-                    href="/sign-up"
-                  >
-                    Get started
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </Link>
+                  <SignedOut>
+                    <SignUpButton>
+                      <Button size="sm">
+                        Get started <ArrowRight className="ml-1.5 h-5 w-5" />
+                      </Button>
+                    </SignUpButton>
+                  </SignedOut>
                 </li>
                 <li className="my-3 h-px w-full bg-gray-300" />
                 <li>
-                  <Link
-                    onClick={() => closeOnCurrent("/sign-in")}
-                    className="flex items-center w-full font-semibold"
-                    href="/sign-in"
-                  >
-                    Sign in
-                  </Link>
+                  <SignedOut>
+                    <SignInButton >
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                      >
+                        Sign in
+                      </Button>
+                    </SignInButton>
+                  </SignedOut>
                 </li>
               </>
             ) : (
@@ -93,11 +96,11 @@ const MobileNav = ({ isAuth, name, email, imageUrl }: MobileNavProps) => {
                 <li className="my-3 h-px w-full bg-gray-300" />
                 <li>
                   <Link
-                    onClick={() => closeOnCurrent("/chat-ai")}
+                    onClick={() => closeOnCurrent("/text_bot")}
                     className="flex items-center w-full font-semibold"
-                    href="/chat-ai"
+                    href="/text_bot"
                   >
-                    Jutech Ai
+                    Text Bot
                   </Link>
                 </li>
                 <li className="my-3 h-px w-full bg-gray-300" />

@@ -6,7 +6,7 @@ import Skeleton from "react-loading-skeleton";
 import Link from "next/link";
 import { format } from "date-fns";
 import { useState } from "react";
-import { Button } from "../ui/button";
+import { Button, buttonVariants } from "../ui/button";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { GetHelpButton } from "../modal/GetHelpButton";
 import { IUser } from "@/lib/models/user.models";
+import { cn } from "@/lib/utils";
 
 const Dashboard = ({ isSubscribed, user }: { isSubscribed: boolean, user: IUser }) => {
   const [currentlyDeletingFile, setCurrentlyDeletingFile] = useState<
@@ -49,7 +50,7 @@ const Dashboard = ({ isSubscribed, user }: { isSubscribed: boolean, user: IUser 
         <h1 className="mb-3 font-bold text-2xl md:text-5xl text-gray-900">My Files</h1>
         <div className="flex gap-4 px-2">
           <UploadButton user={user} isSubscribed={isSubscribed} />
-          <GetHelpButton />
+          <Link href="/chat-ai" className={cn(buttonVariants())}>Jutech AI</Link>
         </div>
       </div>
       {/**Display all user files from database */}

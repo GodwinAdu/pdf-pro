@@ -72,11 +72,11 @@ const UpgradeButton = ({ plan, profile }: UpgradeProps) => {
       let newAmount = 0;
       if (formData.plan === "pro") {
         if (formData.period === "monthly") {
-          newAmount = 100;
+          newAmount = 150;
         } else if (formData.period === "6-months") {
-          newAmount = 550;
+          newAmount = 850;
         } else if (formData.period === "yearly") {
-          newAmount = 1100;
+          newAmount = 1650;
         }
       }
       setFormData(prevData => ({
