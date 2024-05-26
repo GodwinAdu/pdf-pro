@@ -113,7 +113,7 @@ const page = async () => {
                                         <>
                                             <AlertDialog>
                                                 <AlertDialogTrigger asChild>
-                                                    {project?.status === "done" ? (
+                                                    {project?.status === "pending" ? (
                                                         <>
                                                             <Button
                                                                 size="sm"

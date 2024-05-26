@@ -11,10 +11,7 @@ const Page = () => {
   const searchParams = useSearchParams()
   const origin = searchParams.get('origin')
 
-  const { isSuccess, isError } = trpc.authCallback.useQuery(undefined, {
-    retry: true,
-    retryDelay: 500,
-  });
+  const { isSuccess, isError } = trpc.authCallback.useQuery();
 
   if (isSuccess) {
     // user is synced to db
