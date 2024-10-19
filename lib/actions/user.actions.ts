@@ -134,6 +134,28 @@ export async function updateUserUpload(userId: string) {
 
 
 
+export const getClerkUsers = async ({ userIds }: { userIds: string[] }) => {
+    try {
+        // Query MongoDB to find users with emails matching the userIds array
+        const users = await User.find({ email: { $in: userIds } });
+
+        // Map the MongoDB user data to the format you need
+        const formattedUsers = users.map((user) => ({
+            id: user._id, // Assuming _id is the user ID in MongoDB
+            name: user.fullName,
+            email: user.email,
+            avatar: user?.imageUrl,
+        }));
+
+        // Sort the users to match the order of the provided userIds (emails)
+        const sortedUsers = userIds.map((email) => formattedUsers.find((user) => user.email === email));
+
+        return parseStringify(sortedUsers);
+    } catch (error) {
+        console.log(`Error fetching users: ${error}`);
+    }
+}
+
 export const getDocumentUsers = async ({ roomId, currentUser, text }: { roomId: string, currentUser: string, text: string }) => {
     try {
         const room = await liveblocks.getRoom(roomId);
