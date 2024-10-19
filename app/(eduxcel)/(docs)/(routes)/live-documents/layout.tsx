@@ -1,7 +1,7 @@
 import { ReactNode } from "react"
 import Provider from "./Provider"
 import { currentUser } from "@/lib/helpers/current-user"
-
+export const dynamic = 'force-dynamic'; // This forces server-side rendering
 export default async function RootLayout({
     children
 }: {

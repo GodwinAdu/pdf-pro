@@ -9,6 +9,7 @@ import { currentUser } from '@/lib/helpers/current-user'
 import BuyCoin from '@/components/coins/BuyCoin'
 import { fetchCoinByUserId } from '@/lib/actions/coin.actions'
 
+export const dynamic = 'force-dynamic'; // This forces server-side rendering
 const page = async () => {
   const user = await currentUser();
 

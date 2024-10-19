@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     description: "Created by Jutech Devs",
 };
 
-
+export const dynamic = 'force-dynamic'; // This forces server-side rendering
 export default async function RootLayout({
   children,
 }: Readonly<{

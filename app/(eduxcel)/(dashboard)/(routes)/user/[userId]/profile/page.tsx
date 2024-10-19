@@ -5,6 +5,7 @@ import { currentUser } from '@/lib/helpers/current-user'
 import React from 'react'
 import UserDetail from './_components/UserDetails'
 
+export const dynamic = 'force-dynamic'; // This forces server-side rendering
 const page = async () => {
   const user = await currentUser();
 

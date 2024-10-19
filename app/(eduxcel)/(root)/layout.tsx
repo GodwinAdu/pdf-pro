@@ -4,7 +4,7 @@ import IntroModal from "@/components/modal/IntroModal"
 import { ReactNode } from "react"
 import MainNavbar from "@/components/header3/MainNavbar"
 
-
+export const dynamic = 'force-dynamic'; // This forces server-side rendering
 export default function RootLayout({
     children
 }: {
