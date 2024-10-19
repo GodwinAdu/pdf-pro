@@ -43,9 +43,9 @@ const menuItems: MenuItem[] = [
             {
                 title: "Contest Hub",
                 subMenu: [
-                    { title: "Practice Quiz", link: "/study_battle", badge: "coming soon", disabled: true },
+                    { title: "Practice Quiz", link: "/practice_quiz", badge: "coming soon", disabled: true },
                     { title: "Study Battles", link: "/study_battle", badge: "coming soon", disabled: true },
-                    { title: "Daily Trial", link: "/discuss", badge: "coming soon", disabled: true },
+                    { title: "Daily Trial", link: "/daily_trail", badge: "coming soon", disabled: true },
                     { title: "Bi-Weekly Trial", link: "/problem_solving", badge: "coming soon", disabled: true },
                     { title: "Weekly Trial", link: "/problem_solving", badge: "coming soon", disabled: true },
                 ],
@@ -63,7 +63,7 @@ const menuItems: MenuItem[] = [
         title: "Get Help",
         subMenu: [
             { title: "Assignment Help", link: "/projects"},
-            { title: "AI Research", link: "/discuss", badge: "coming soon", disabled: true },
+            { title: "AI Research", link: "/join", badge: "coming soon", disabled: true },
             { title: "AI Care Study", link: "/problem_solving" ,badge: "coming soon", disabled: true },
         ],
     },
