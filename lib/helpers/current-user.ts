@@ -1,3 +1,4 @@
+"use server"
 import { JwtPayload, TokenExpiredError } from "jsonwebtoken";
 import { cookies } from "next/headers";
 import { fetchUser } from "../actions/user.actions";
