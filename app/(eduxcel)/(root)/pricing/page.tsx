@@ -21,11 +21,9 @@ export default page
 //   TooltipTrigger,
 // } from '@/components/ui/tooltip'
 // import { PLANS } from '@/config/plans'
-// import { currentProfile } from '@/lib/profile/currentProfile'
 // import { isUserSubscribed } from '@/lib/profile/subscription'
 
 // import { cn } from '@/lib/utils'
-// import { currentUser } from '@clerk/nextjs/server'
 
 // import {
 //   ArrowRight,
