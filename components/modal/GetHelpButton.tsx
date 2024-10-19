@@ -43,23 +43,25 @@ import { Calendar } from "@/components/ui/calendar";
 import { ArrowDown, CalendarIcon } from "lucide-react";
 import { Textarea } from "../ui/textarea";
 import { AssignmentSchema } from "@/lib/validators/AssignmentValitions";
-import { toast } from "../ui/use-toast";
 import { postAssignment } from "@/lib/actions/assignment.actions";
 import Link from "next/link";
+import { toast } from "@/hooks/use-toast";
+import { usePathname } from "next/navigation";
 
 
 
 export function GetHelpButton() {
+  const path = usePathname();
   // 1. Define your form.
   const form = useForm<z.infer<typeof AssignmentSchema>>({
     resolver: zodResolver(AssignmentSchema),
     defaultValues: {
-      name: "",
+      fullname: "",
       email: "",
       phone: "",
-      problem: "",
       question:"",
       description:"",
+      problemType:"",
       deadline: new Date(),
     },
   });
@@ -67,15 +69,7 @@ export function GetHelpButton() {
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof AssignmentSchema>) {
      try {
-        await postAssignment({
-            name:values.name,
-            email:values.email,
-            phone:values.phone,
-            problem:values.problem,
-            question:values.question,
-            description:values.description,
-            deadline:values.deadline
-        })
+        await postAssignment(values,path as string)
         toast({
             title: "Successfully sent",
             description: "Your project/assignment will solve before deadline",
@@ -114,7 +108,7 @@ export function GetHelpButton() {
               >
                 <FormField
                   control={form.control}
-                  name="name"
+                  name="fullname"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Full Name</FormLabel>
@@ -153,7 +147,7 @@ export function GetHelpButton() {
                 />
                 <FormField
                   control={form.control}
-                  name="problem"
+                  name="problemType"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Choose your problem</FormLabel>

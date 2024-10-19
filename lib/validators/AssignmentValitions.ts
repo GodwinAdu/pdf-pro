@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const AssignmentSchema = z.object({
-    name: z.string().min(2, {
+    fullname: z.string().min(2, {
       message: "Username must be at least 2 characters.",
     }),
     email: z.string().min(2, {
@@ -10,10 +10,10 @@ export const AssignmentSchema = z.object({
     phone: z.string().min(2, {
       message: "Username must be at least 2 characters.",
     }),
-    problem: z.string().min(2, {
+    question: z.string().min(2, {
       message: "Username must be at least 2 characters.",
     }),
-    question: z.string().min(2, {
+    problemType: z.string().min(2, {
       message: "Username must be at least 2 characters.",
     }),
     description: z.string().min(2, {
