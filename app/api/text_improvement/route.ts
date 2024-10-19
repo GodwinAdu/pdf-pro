@@ -1,7 +1,7 @@
 import { openai } from "@/lib/openai";
 import { NextRequest } from "next/server";
-import { currentUser } from "@clerk/nextjs/server";
 import { SendConversationValidator } from "@/lib/validators/SendConversationValidator";
+import { currentUser } from "@/lib/helpers/current-user";
 
 export const POST = async (req: NextRequest) => {
     const body = await req.json();

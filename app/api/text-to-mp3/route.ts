@@ -31,6 +31,6 @@ export const POST = async (req: NextRequest) => {
 
     } catch (error) {
         console.error('Error generating audio:', error);
-        return NextResponse.json({ error: error.message || 'Failed to synthesize speech.' }, { status: 500 });
+        return NextResponse.json({ error: error || 'Failed to synthesize speech.' }, { status: 500 });
     }
 };
