@@ -23,7 +23,7 @@ export async function createMessage({userId,fileId,text}:CreateMessageProps){
         await message.save();
         
     } catch (error:any) {
-        console.log("error occured while creating message",error)
+        console.log("error occurred while creating message",error)
         throw error
     }
 }
@@ -69,6 +69,8 @@ interface fetchMessagesProps{
 
 export async function fetchMessages({ fileId, limit, cursor }:fetchMessagesProps) {
     try {
+        await connectToDB();
+        
         const query = Message.find({fileId}); // Define your MongoDB query as needed
         
         if (cursor ) {

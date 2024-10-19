@@ -1,8 +1,9 @@
 "use server";
 
+import { currentUser } from "../helpers/current-user";
 import Payment from "../models/payment.models";
 import { connectToDB } from "../mongoose";
-import { auth } from "@clerk/nextjs/server";
+
 
 interface PaymentProps {
     name: string;
@@ -19,7 +20,8 @@ export async function sendPayment({
     period
 }: PaymentProps) {
     await connectToDB();
-    const {userId} = auth()
+    const user = await currentUser();
+    const userId = user._id;
 
     try {
         let updatePayment;

@@ -10,7 +10,7 @@ import User from "../models/user.models";
 import { parseStringify } from '../utils';
 
 export async function fetchPosts(pageNumber = 1, pageSize = 20) {
-  connectToDB();
+  await connectToDB();
 
   // Calculate the number of posts to skip based on the page number and page size.
   const skipAmount = (pageNumber - 1) * pageSize;
@@ -55,7 +55,7 @@ interface Params {
 export async function createThread({ text, author, path }: Params
 ) {
   try {
-    connectToDB();
+    await connectToDB();
 
     const createdThread = await Thread.create({
       text,
@@ -74,6 +74,7 @@ export async function createThread({ text, author, path }: Params
 }
 
 async function fetchAllChildThreads(threadId: string): Promise<any[]> {
+  await connectToDB();
   const childThreads = await Thread.find({ parentId: threadId });
 
   const descendantThreads = [];
@@ -87,7 +88,7 @@ async function fetchAllChildThreads(threadId: string): Promise<any[]> {
 
 export async function deleteThread(id: string, path: string): Promise<void> {
   try {
-    connectToDB();
+    await connectToDB();
 
     // Find the thread to be deleted (the main thread)
     const mainThread = await Thread.findById(id).populate("author community");
@@ -142,7 +143,7 @@ export async function deleteThread(id: string, path: string): Promise<void> {
 }
 
 export async function fetchThreadById(threadId: string) {
-  connectToDB();
+  await connectToDB();
 
   try {
     const thread = await Thread.findById(threadId)
@@ -185,7 +186,7 @@ export async function addCommentToThread(
   userId: string,
   path: string
 ) {
-  connectToDB();
+  await connectToDB();
 
   try {
     // Find the original thread by its ID

@@ -39,13 +39,13 @@ export async function generateResetLink(email: string) {
 }
 
 
-export async function resetPassword(values: { password: string }, token:  string | undefined | null) {
+export async function resetPassword(values: { password: string }, token:  any) {
     try {
         const { password } = values;
         await connectToDB();
 
         // Verify the token
-        const data = jwt.verify(token, JWT_SECRET) as { email: string, userId: string };
+        const data = await jwt.verify(token, JWT_SECRET);
 
         if (!data.email || !data.userId) throw new Error("Invalid token");
 

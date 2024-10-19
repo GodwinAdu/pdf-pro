@@ -6,7 +6,7 @@ import { revalidatePath } from 'next/cache';
 import { getAccessType, parseStringify } from '../utils';
 import { redirect } from 'next/navigation';
 
-export const createDocument = async ({ userId, email }: CreateDocumentParams) => {
+export const createDocument = async ({ userId, email }: any) => {
   const roomId = nanoid();
 
   try {
@@ -16,7 +16,7 @@ export const createDocument = async ({ userId, email }: CreateDocumentParams) =>
       title: 'Untitled'
     }
 
-    const usersAccesses: RoomAccesses = {
+    const usersAccesses: any = {
       [email]: ['room:write']
     }
 
@@ -76,10 +76,10 @@ export const getDocuments = async (email: string ) => {
   }
 }
 
-export const updateDocumentAccess = async ({ roomId, email, userType, updatedBy }: ShareDocumentParams) => {
+export const updateDocumentAccess = async ({ roomId, email, userType, updatedBy }:any) => {
   try {
-    const usersAccesses: RoomAccesses = {
-      [email]: getAccessType(userType) as AccessType,
+    const usersAccesses: any = {
+      [email]: getAccessType(userType) as any,
     }
 
     const room = await liveblocks.updateRoom(roomId, { 

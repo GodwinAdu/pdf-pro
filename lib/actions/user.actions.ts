@@ -18,7 +18,7 @@ export async function fetchUser(id: string) {
     try {
         await connectToDB();
 
-        const user = await User.findById(id).populate({path:"coinId", model:Coin}).exec(); // Pass the 'id' directly as a string
+        const user = await User.findById(id).populate({ path: "coinId", model: Coin }).exec(); // Pass the 'id' directly as a string
 
         if (!user) return null;
 
@@ -134,28 +134,6 @@ export async function updateUserUpload(userId: string) {
 
 
 
-export const getClerkUsers = async ({ userIds }: { userIds: string[] }) => {
-    try {
-        // Query MongoDB to find users with emails matching the userIds array
-        const users = await User.find({ email: { $in: userIds } });
-
-        // Map the MongoDB user data to the format you need
-        const formattedUsers = users.map((user) => ({
-            id: user._id, // Assuming _id is the user ID in MongoDB
-            name: `${user.firstName} ${user.lastName}`,
-            email: user.email,
-            avatar: user?.imageUrl,
-        }));
-
-        // Sort the users to match the order of the provided userIds (emails)
-        const sortedUsers = userIds.map((email) => formattedUsers.find((user) => user.email === email));
-
-        return parseStringify(sortedUsers);
-    } catch (error) {
-        console.log(`Error fetching users: ${error}`);
-    }
-}
-
 export const getDocumentUsers = async ({ roomId, currentUser, text }: { roomId: string, currentUser: string, text: string }) => {
     try {
         const room = await liveblocks.getRoom(roomId);
@@ -193,7 +171,7 @@ export async function fetchUsers({
     sortBy?: SortOrder;
 }) {
     try {
-        connectToDB();
+        await connectToDB();
 
         // Calculate the number of users to skip based on the page number and page size.
         const skipAmount = (pageNumber - 1) * pageSize;
@@ -240,7 +218,7 @@ export async function fetchUsers({
 
 export async function getActivity(userId: string) {
     try {
-        connectToDB();
+        await connectToDB();
 
         // Find all threads created by the user
         const userThreads = await Thread.find({ author: userId });

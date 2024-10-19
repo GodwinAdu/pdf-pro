@@ -296,6 +296,7 @@ export async function updateServerWithInvitedCode(invitedCode: string, userId: s
 // Helper function to delete a server and its related members and channels
 export async function deleteServer(serverId: string) {
     try {
+        await connectToDB();
         // Find the server by its ID
         const server = await Server.findById(serverId);
 
@@ -343,6 +344,7 @@ export async function updateServer(values: { name: string, imageUrl: string }, s
 
 export async function leaveServer(serverId: string) {
     try {
+        await connectToDB();
         const user = await currentUser();
 
         if (!user) {

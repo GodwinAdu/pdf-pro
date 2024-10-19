@@ -65,6 +65,7 @@ export const resendOtp = async () => {
 
 export const verifyOtp = async (otp: string) => {
     try {
+        await connectToDB()
         const user = await currentUser()
         const userId = user._id;
         // Find the OTP entry for the given userId

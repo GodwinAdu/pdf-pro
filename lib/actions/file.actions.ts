@@ -229,6 +229,8 @@ export async function getOrCreateConversation (memberOneId: string, memberTwoId:
 
 export async function findConversation(memberOneId: string, memberTwoId: string){
   try {
+    await connectToDB();
+
     return await GroupConversation.findOne({
       $and: [
         { memberOne: memberOneId },
@@ -258,6 +260,7 @@ export async function findConversation(memberOneId: string, memberTwoId: string)
 
 export async function createNewConversation(memberOneId: string, memberTwoId: string){
   try {
+    await connectToDB()
     return await GroupConversation.create({
       memberOne: memberOneId,
       memberTwo: memberTwoId,
