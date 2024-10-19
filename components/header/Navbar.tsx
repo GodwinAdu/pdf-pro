@@ -5,9 +5,7 @@ import { Button, buttonVariants } from "../ui/button";
 import { ArrowRight } from "lucide-react";
 import UserAccountNav from "../UserAccountNav";
 import MobileNav from "./MobileNav";
-import { SignInButton, SignUpButton, SignedIn, SignedOut, UserButton, } from "@clerk/nextjs";
-import { currentUser } from "@clerk/nextjs/server";
-
+import { currentUser } from "@/lib/helpers/current-user";
 const Navbar = async () => {
   const user = await currentUser();
 
@@ -23,35 +21,29 @@ const Navbar = async () => {
             <MobileNav
               isAuth={!!user}
               name={
-                !user?.firstName || !user?.lastName
+                !user?.fullName
                   ? "Your Account"
-                  : `${user?.firstName} ${user?.lastName}`
+                  : `${user?.fullName}`
               }
-              email={user?.emailAddresses[0].emailAddress ?? ""}
+              email={user?.email ?? ""}
               imageUrl={user?.imageUrl ?? ""}
             />
 
             <div className="hidden items-center space-x-4 sm:flex">
               {!user ? (
                 <>
-                  <SignedOut>
-                    <SignInButton >
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                      >
-                        Sign in
-                      </Button>
-                    </SignInButton>
-                  </SignedOut>
-                  <SignedOut>
-                    <SignUpButton>
-                      <Button size="sm">
-                        Get started <ArrowRight className="ml-1.5 h-5 w-5" />
-                      </Button>
-                    </SignUpButton>
-                  </SignedOut>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                  >
+                    Sign in
+                  </Button>
+
+                  <Button size="sm">
+                    Get started <ArrowRight className="ml-1.5 h-5 w-5" />
+                  </Button>
                 </>
+
               ) : (
                 <>
                   <Link
@@ -100,9 +92,7 @@ const Navbar = async () => {
                     Pricing
                   </Link>
 
-                  <SignedIn>
-                    <UserButton afterSignOutUrl="/" />
-                  </SignedIn>
+                  
                 </>
               )}
             </div>

@@ -5,7 +5,7 @@ import { auth } from "@clerk/nextjs/server";
 import { fetchUser } from "../actions/user.actions";
 
 export async function subscriptionProfile() {
-  const { userId } = auth();
+  const  userId  = "3472349294";
 
   if (!userId) return redirect("/sign -in");
 
@@ -22,7 +22,7 @@ export async function subscriptionProfile() {
 
 export async function isUserSubscribed() {
   try {
-    const { userId } = auth();
+    const userId  = "3472349294";
     const currentDate = new Date();
     const userDetails = await fetchUser({ clerkId: userId as string });
 
@@ -53,7 +53,7 @@ export async function isUserSubscribed() {
 
 export async function isSubscriptionDue() {
   try {
-    const { userId } = auth();
+    const userId  = "3472349294";
     const userDetails = await fetchUser({ clerkId: userId as string });
 
     // if (!userDetails) return redirect('/auth-callback');

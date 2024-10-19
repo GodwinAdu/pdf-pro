@@ -13,6 +13,7 @@ interface MessageProps {
 
 const Message = forwardRef<HTMLDivElement, MessageProps>(
   ({ message, isNextMessageSamePerson }, ref) => {
+  
     return (
       <div
         ref={ref}
@@ -81,7 +82,7 @@ const Message = forwardRef<HTMLDivElement, MessageProps>(
                   }
                 )}>
                 {format(
-                  new Date(message.createdAt),
+                  new Date(message.timestamp),
                   'HH:mm'
                 )}
               </div>

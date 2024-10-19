@@ -4,10 +4,10 @@ import { createUser, fetchUser } from '@/lib/actions/user.actions';
 import { deleteFile, fetchFileById, fetchFileByKey, fetchPDF, fetchUserFiles } from '@/lib/actions/file.actions';
 import { INFINITE_QUERY_LIMIT } from '../config/infinite-query';
 import { fetchMessages } from '@/lib/actions/message.actions';
-import { fetchConversations } from '@/lib/actions/conversation.actions';
-import { currentUser } from '@clerk/nextjs/server';
+import { fetchConversations, fetchPrevConversations } from '@/lib/actions/conversation.actions';
 import { z } from "zod"
 import { TRPCError } from '@trpc/server/unstable-core-do-not-import';
+import { currentUser } from '@/lib/helpers/current-user';
 
 export const appRouter = router({
   authCallback: publicProcedure.query(async () => {
@@ -15,11 +15,9 @@ export const appRouter = router({
 
     const user = await currentUser();
 
-    if (!user?.id || !user.emailAddresses[0].emailAddress) throw new TRPCError({ code: 'UNAUTHORIZED' })
+    if (!user?._id || !user.emailAddresses[0].emailAddress) throw new TRPCError({ code: 'UNAUTHORIZED' })
     //check if user is in the database?
-    const dbUser = await fetchUser({
-      clerkId: user?.id
-    });
+    const dbUser = await fetchUser(user._id);
 
     if (!dbUser) {
       //create user in db
@@ -66,6 +64,32 @@ export const appRouter = router({
 
 
       return { messages }
+    }),
+  // Query to get all conversations by sessionId
+  getConversationsBySessionId: privateProcedure
+    .input(
+      z.object({
+        sessionId: z.string(), // Expecting sessionId as input
+      })
+    )
+    .query(async ({ input }) => {
+      const { sessionId } = input;
+
+      try {
+        // Fetch the conversation with the given sessionId from the MongoDB database
+        const conversation = await fetchPrevConversations({sessionId});
+
+        if (!conversation) {
+          return { conversations: [] };
+        }
+
+        return {
+          conversations: conversation.messages.reverse(), // return the array of messages
+        };
+      } catch (error) {
+        console.error("Error fetching conversations by sessionId", error);
+        throw new Error("Failed to fetch conversations");
+      }
     }),
   getConversations: privateProcedure
     .input(

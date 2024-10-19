@@ -1,9 +1,9 @@
 "use server"
 import Assignment from "../models/Assignment.models";
 import { connectToDB } from "../mongoose";
-import { auth } from "@clerk/nextjs/server";
 import { getPrice } from "../utils";
 import { revalidatePath } from "next/cache";
+import { currentUser } from "../helpers/current-user";
 
 
 
@@ -21,7 +21,8 @@ export async function postAssignment(values: PostProps, path: string) {
     try {
         const { fullname, email, phone, question, problemType, description, deadline } = values
         await connectToDB();
-        const { userId } = auth();
+        const user = await currentUser();
+        const userId = user._id;
         const value = getPrice(problemType);
         const price = parseFloat(value.replace(/\D/g, '')); // Removes all non-numeric characters
 
@@ -93,7 +94,8 @@ export async function updateAssignment(assignmentId: string, values: PostProps, 
     try {
         // Destructure values
         const { fullname, email, phone, question, problemType, description, deadline } = values;
-
+        const value = getPrice(problemType);
+        const price = parseFloat(value.replace(/\D/g, '')); // Removes all non-numeric characters
         // Connect to the database
         await connectToDB();
 
@@ -108,7 +110,8 @@ export async function updateAssignment(assignmentId: string, values: PostProps, 
                     question,
                     problemType,
                     description,
-                    deadline
+                    deadline,
+                    price
                 }
             },
             {
@@ -137,11 +140,13 @@ export async function updateAssignmentPayment(assignmentId: string) {
         const updatedPayed = await Assignment.findById(assignmentId);
 
         if (!updatedPayed) {
-            throw new Error('Couldnt updated assignment payment')
+            throw new Error(`couldn't updated assignment payment`);
         }
         updatedPayed.payed = true;
 
         await updatedPayed.save();
+
+        return JSON.parse(JSON.stringify(updatedPayed));
 
     } catch (error) {
         console.error("Error updating admin:", error);

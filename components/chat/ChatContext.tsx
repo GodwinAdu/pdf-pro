@@ -1,8 +1,8 @@
 import { ReactNode, createContext, useRef, useState } from "react";
-import { useToast } from "../ui/use-toast";
 import { useMutation } from "@tanstack/react-query";
-import { trpc } from "@/app/_trpc/client";
+import { trpc } from "@/app/(eduxcel)/_trpc/client";
 import { INFINITE_QUERY_LIMIT } from "@/config/infinite-query";
+import { toast } from "@/hooks/use-toast";
 
 interface StreamResponse {
   addMessage: () => void;
@@ -32,9 +32,8 @@ export const ChatContextProvider = ({ fileId, children }: Props) => {
   const [message, setMessage] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const utils = trpc.useContext();
+  const utils = trpc.useUtils();
 
-  const { toast } = useToast();
 
   const backupMessage = useRef("");
 

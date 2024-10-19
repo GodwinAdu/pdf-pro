@@ -30,10 +30,11 @@ import {
 
 import SimpleBar from "simplebar-react";
 import PdfFullscreen from "./PdfFullscreen";
-import { useToast } from "../ui/use-toast";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import AudioButton from "./AudioButton";
+import { toast } from "@/hooks/use-toast";
+
 
 
 // pdfjs.GlobalWorkerOptions.workerSrc = new URL(
@@ -41,9 +42,16 @@ import AudioButton from "./AudioButton";
 //     import.meta.url,
 //   ).toString();
 
-// pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/legacy/build/pdf.worker.min.js
+pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+// pdfjs.GlobalWorkerOptions.workerSrc = `unpkg.com/pdfjs-dist@${pdfjs.version}/legacy/build/pdf.worker.min.mjs`
 
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
+
+// Set the correct version from the CDN
+// pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+
+// Correct the worker source URL (use a valid version)
+// pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.min.mjs`
+
 
 interface PdfRendererProps {
   url: string;
@@ -55,7 +63,8 @@ const options = {
 
 
 const PdfRenderer = ({ url }: PdfRendererProps) => {
-  const { toast } = useToast();
+  console.log(url,"checking url")
+
 
   const [numPages, setNumPages] = useState<number>();
   const [currPage, setCurrPage] = useState<number>(1);
@@ -221,10 +230,11 @@ const PdfRenderer = ({ url }: PdfRendererProps) => {
                     <Loader2 className='my-24 h-6 w-6 animate-spin' />
                   </div>
                 }
-                onLoadError={() => {
+                onLoadError={(error) => {
+                  console.log(error.message)
                   toast({
                     title: 'Error loading PDF',
-                    description: 'Please try again later',
+                    description: 'Please try again later' + error.message,
                     variant: 'destructive',
                   })
                 }}

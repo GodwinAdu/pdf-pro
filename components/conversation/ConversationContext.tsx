@@ -1,10 +1,10 @@
 import { ReactNode, createContext, useEffect, useRef, useState } from "react";
-import { useToast } from "../ui/use-toast";
 import { useMutation } from "@tanstack/react-query";
-import { trpc } from "@/app/_trpc/client";
+import { trpc } from "@/app/(eduxcel)/_trpc/client";
 import { INFINITE_QUERY_LIMIT } from "@/config/infinite-query";
 import { v4 as uuidv4 } from "uuid";
 import { usePathname, useRouter } from "next/navigation";
+import { toast } from "@/hooks/use-toast";
 
 interface StreamResponse {
   addMessage: () => void;
@@ -21,22 +21,23 @@ export const ConversationContext = createContext<StreamResponse>({
 
 interface Props {
   userId: string;
+  sessionId: string;
   children: ReactNode;
 }
 
 interface Message {
-  createdAt: string;
+  timestamp: string;
   id: string;
   text: string;
   isUserMessage: boolean;
 }
-export const ConversationContextProvider = ({ userId, children }: Props) => {
+export const ConversationContextProvider = ({ userId, children,sessionId }: Props) => {
   const [message, setMessage] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const router = useRouter();
 
-  const utils = trpc.useContext();
+  const utils = trpc.useUtils();
 
-  const { toast } = useToast();
 
   const backupMessage = useRef("");
 
@@ -45,6 +46,7 @@ export const ConversationContextProvider = ({ userId, children }: Props) => {
       const response = await fetch("/api/conversation", {
         method: "POST",
         body: JSON.stringify({
+          sessionId,
           userId,
           message,
         }),
@@ -55,19 +57,26 @@ export const ConversationContextProvider = ({ userId, children }: Props) => {
       return response.body;
     },
     onMutate: async ({ message }) => {
+      const chatSessionId = sessionId || uuidv4(); // Generate sessionId if not provided
+
+      // If there's no sessionId, redirect to the new chat session
+      if (!sessionId) {
+        router.push(`/chat-ai/c/${chatSessionId}`);
+      }
+
       backupMessage.current = message;
       setMessage("");
      
 
       // step 1
-      await utils.getConversations.cancel();
+      await utils.getConversationsBySessionId.cancel();
 
       // step 2
-      const previousMessages = utils.getConversations.getInfiniteData();
+      const previousMessages = utils.getConversationsBySessionId.getInfiniteData();
 
       // step 3
-      utils.getConversations.setInfiniteData(
-        { userId, limit: INFINITE_QUERY_LIMIT },
+      utils.getConversationsBySessionId.setInfiniteData(
+        { sessionId },
         (old) => {
           if (!old) {
             return {
@@ -89,7 +98,7 @@ export const ConversationContextProvider = ({ userId, children }: Props) => {
 
           latestPage.conversations.messages = [
             {
-              createdAt: new Date().toISOString(),
+              timestamp: new Date().toISOString(),
               id: crypto.randomUUID(),
               text: message,
               isUserMessage: true,
@@ -140,9 +149,10 @@ export const ConversationContextProvider = ({ userId, children }: Props) => {
         accResponse += chunkValue;
 
         // Append chunk to the actual message
-        utils.getConversations.setInfiniteData(
-          { userId, limit: INFINITE_QUERY_LIMIT },
+        utils.getConversationsBySessionId.setInfiniteData(
+          { sessionId },
           (old) => {
+            console.log(old,"fetch old message")
             if (!old) {
               return {
                 pages: [
@@ -150,13 +160,12 @@ export const ConversationContextProvider = ({ userId, children }: Props) => {
                     conversations: {
                       messages: [
                         {
-                          createdAt: new Date().toISOString(),
+                          timestamp: new Date().toISOString(),
                           id: crypto.randomUUID(),
                           text: message,
                           isUserMessage: true,
                         },
                       ],
-                      nextCursor: undefined,
                     },
                   },
                 ],
@@ -177,7 +186,7 @@ export const ConversationContextProvider = ({ userId, children }: Props) => {
                 if (!isAiResponseCreated) {
                   updatedMessages = [
                     {
-                      createdAt: new Date().toISOString(),
+                      timestamp: new Date().toISOString(),
                       id: "ai-response",
                       text: accResponse,
                       isUserMessage: false,
@@ -202,7 +211,6 @@ export const ConversationContextProvider = ({ userId, children }: Props) => {
                   ...page,
                   conversations: {
                     messages: updatedMessages,
-                    nextCursor: undefined, // You may need to update this based on your data
                   },
                 };
               }
@@ -217,19 +225,18 @@ export const ConversationContextProvider = ({ userId, children }: Props) => {
     },
     onError: (_, __, context) => {
       setMessage(backupMessage.current);
-      utils.getConversations.setData(
-        { userId },
+      utils.getConversationsBySessionId.setData(
+        { sessionId },
         {
           conversations:
             context?.previousMessages?.map((page) => page.messages) ?? [],
-          nextCursor: undefined, // You may need to adjust this based on your data structure
         }
       );
     },
     onSettled: async () => {
       setIsLoading(false);
 
-      await utils.getConversations.invalidate({ userId });
+      await utils.getConversationsBySessionId.invalidate({ sessionId });
     },
   });
 

@@ -1,6 +1,7 @@
 "use server"
 
 import File from "../models/file.models";
+import GroupConversation from "../models/group-conversation.models";
 import Message from "../models/message.models";
 import { connectToDB } from "../mongoose"
 import { getPineconeClient } from "../pinecone";
@@ -14,11 +15,11 @@ interface createFileProps {
 }
 
 export async function createFile(data: createFileProps) {
+    try {
     await connectToDB();
 
     const { key, name, userId, url, uploadStatus } = data
 
-    try {
         const existingFile = await File.findOne({ key });
 
         if (existingFile) {
@@ -70,8 +71,8 @@ interface FetchFileKeyProps {
 }
 
 export async function fetchFileByKey({ key, userId }: FetchFileKeyProps) {
-    await connectToDB();
     try {
+    await connectToDB();
         const file = await File.findOne({ key, userId })
         if (!file) {
             throw new Error("File doesnt exist")
@@ -211,3 +212,74 @@ export async function updateUploadStatus({ fileId, newStatus }: statusProps) {
         throw error;
     }
 };
+
+
+// for group discussion???
+
+export async function getOrCreateConversation (memberOneId: string, memberTwoId: string){
+  let conversation = await findConversation(memberOneId, memberTwoId)
+    || await findConversation(memberTwoId, memberOneId);
+
+  if (!conversation) {
+    conversation = await createNewConversation(memberOneId, memberTwoId);
+  }
+
+  return JSON.parse(JSON.stringify(conversation));
+}
+
+export async function findConversation(memberOneId: string, memberTwoId: string){
+  try {
+    return await GroupConversation.findOne({
+      $and: [
+        { memberOne: memberOneId },
+        { memberTwo: memberTwoId },
+      ],
+    })
+    .populate({
+      path: 'memberOne',
+      populate: {
+        path: 'userId',  // Assuming memberOne has a reference to user profile (userId)
+        model: 'User',   // Assuming User is the profile model
+      },
+    })
+    .populate({
+      path: 'memberTwo',
+      populate: {
+        path: 'userId',  // Assuming memberTwo has a reference to user profile (userId)
+        model: 'User',
+      },
+    })
+
+  } catch (error) {
+    console.error("Error finding conversation:", error);
+    return null;
+  }
+}
+
+export async function createNewConversation(memberOneId: string, memberTwoId: string){
+  try {
+    return await GroupConversation.create({
+      memberOne: memberOneId,
+      memberTwo: memberTwoId,
+    }).then(conversation =>
+      conversation
+        .populate({
+          path: 'memberOne',
+          populate: {
+            path: 'userId',
+            model: 'User',
+          },
+        })
+        .populate({
+          path: 'memberTwo',
+          populate: {
+            path: 'userId',
+            model: 'User',
+          },
+        })
+    );
+  } catch (error) {
+    console.error("Error creating conversation:", error);
+    return null;
+  }
+}

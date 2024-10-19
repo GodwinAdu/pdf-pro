@@ -6,31 +6,41 @@ import { Button } from "../ui/button";
 import { Cloud, File, Loader2 } from "lucide-react";
 import Dropzone from "react-dropzone";
 import { useRouter } from "next/navigation";
-import { useToast } from "../ui/use-toast";
 import { Progress } from "../ui/progress";
 import { useUploadThing } from "@/lib/uploadthing";
-import { trpc } from "@/app/_trpc/client";
+import { trpc } from "@/app/(eduxcel)/_trpc/client";
 import { IUser } from "@/lib/models/user.models";
-import { PLANS } from "@/config/plans";
+import { toast } from "@/hooks/use-toast";
 
 const UploadDropzone = ({
-  isSubscribed,
+  coin,
   user,
   setIsOpen
 }: {
-  isSubscribed: boolean,
   user: IUser,
+  coin: number,
   setIsOpen: (v: boolean) => void
 }) => {
 
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
-
-  const { toast } = useToast();
   const router = useRouter();
   const { startUpload } = useUploadThing(
-    isSubscribed ? 'proPlanUploader' : 'freePlanUploader'
-  )
+    "pdfUploader",
+    {
+      onClientUploadComplete: () => {
+        alert("uploaded successfully!");
+      },
+      onUploadError: (error) => {
+        console.log(error, "upload error!");
+        alert("error occurred while uploading");
+      },
+      onUploadBegin: (value) => {
+        console.log(value, "upload")
+      },
+    },
+  );
+
 
   const { mutate: startPolling } = trpc.getFile.useMutation({
     onSuccess: (file) => {
@@ -50,7 +60,7 @@ const UploadDropzone = ({
           clearInterval(interval);
           return prevProgress;
         }
-        return prevProgress + 5;
+        return prevProgress + 2;
       });
     }, 500);
 
@@ -60,52 +70,68 @@ const UploadDropzone = ({
   return (
     <Dropzone
       multiple={false}
-      onDrop={async (acceptedFile) => {
+      onDrop={async (acceptedFiles) => {
         setIsUploading(true);
-        if ((user.plan.planName === "pro" && user.numberUpload >= PLANS.find((plan) => plan.name === 'Pro')!.quota) ||
-          (user.plan.planName === "free" && user.numberUpload >= PLANS.find((plan) => plan.name === 'Free')!.quota)
-        ) {
+        if (coin <= 0) {
           setIsOpen(false)
           return toast({
             title: "Opps!!. Reached Upload Limit",
-            description: "Youve reached monthly qouta limit, Upgrade your account to upload more PDF",
+            description: "Youve use all coins, Buy more coin to upload more PDF",
             variant: "destructive",
           });
         }
 
+
+        if (!acceptedFiles || acceptedFiles.length === 0) {
+          return toast({
+            title: "No file selected",
+            description: "Please select a file to upload",
+            variant: "destructive",
+          });
+        }
+
+
+        console.log(acceptedFiles, "Uploading file...");
 
         const progressInterval = startSimulatedProgress();
 
-        // handle file uploading
-        const res = await startUpload(acceptedFile);
+        try {
+          // Add additional logging before upload
+          console.log("Starting upload...");
+          const res = await startUpload(acceptedFiles); // Ensure you're passing an array
 
-        if (!res) {
-          return toast({
-            title: "Something went wrong",
-            description: "Please try again later",
+          // Log the response from the upload function
+          console.log("Upload response:", res);
+
+          if (!res || res.length === 0) {
+            throw new Error("File upload failed");
+          }
+
+          const [fileResponse] = res;
+          const key = fileResponse?.key;
+
+          console.log("Key from response:", key);
+
+          if (!key) {
+            throw new Error("Upload failed, no file key returned");
+          }
+
+          clearInterval(progressInterval);
+          setUploadProgress(100);
+
+          startPolling({ key });
+        } catch (error) {
+          console.error("Error uploading file:", error);
+          toast({
+            title: "Upload Error",
+            description: "Something went wrong",
             variant: "destructive",
           });
+          clearInterval(progressInterval);
+          setUploadProgress(0);
         }
-
-        const [fileResponse] = res;
-
-        const key = fileResponse?.key;
-
-        console.log("key", key)
-
-        if (!key) {
-          return toast({
-            title: "Something went wrong",
-            description: "Please try again later",
-            variant: "destructive",
-          });
-        }
-
-        clearInterval(progressInterval);
-        setUploadProgress(100);
-
-        startPolling({ key });
       }}
+
     >
       {({ getRootProps, getInputProps, acceptedFiles }) => (
         <div
@@ -124,7 +150,7 @@ const UploadDropzone = ({
                   and drop
                 </p>
                 <p className='text-xs text-zinc-500'>
-                  PDF (up to {isSubscribed ? "16" : "4"}MB)
+                  PDF up to 32MB
                 </p>
               </div>
 
@@ -172,10 +198,10 @@ const UploadDropzone = ({
 };
 
 const UploadButton = ({
-  isSubscribed,
-  user
+  user,
+  coin
 }: {
-  isSubscribed: boolean,
+  coin: number,
   user: IUser
 }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -192,7 +218,7 @@ const UploadButton = ({
         <Button>Upload PDF</Button>
       </DialogTrigger>
       <DialogContent>
-        <UploadDropzone user={user} isSubscribed={isSubscribed} setIsOpen={setIsOpen} />
+        <UploadDropzone coin={coin} user={user} setIsOpen={setIsOpen} />
       </DialogContent>
     </Dialog>
   );

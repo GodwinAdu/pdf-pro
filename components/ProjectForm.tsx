@@ -32,8 +32,8 @@ import { usePathname, useRouter } from "next/navigation"
 import { projectDefaultValues } from "@/lib/constants"
 import { IAssignment } from "@/lib/models/Assignment.models"
 import { postAssignment, updateAssignment } from "@/lib/actions/assignment.actions"
-import { toast } from "./ui/use-toast"
 import { getPrice } from "@/lib/utils"
+import { toast } from "@/hooks/use-toast"
 
 const FormSchema = z.object({
     fullname: z
@@ -45,10 +45,9 @@ const FormSchema = z.object({
             message: "Please email is required",
         })
         .email(),
-    phone: z
-        .string().min(2, {
-            message: "Please phone number is required",
-        }),
+        phone: z
+        .string()
+        .regex(/^\+?[1-9]\d{1,14}$/, { message: "Please enter a valid phone number including country code (e.g., +233123456789)" }),
     question: z
         .string().min(2, {
             message: "Please question is required",
@@ -104,12 +103,11 @@ const ProjectForm = ({ type, data }: ProjectFormProps) => {
     async function onSubmit(values: z.infer<typeof FormSchema>) {
         if (type === "Create") {
             try {
-                await postAssignment(values, path)
+                await postAssignment(values, path as string)
                 router.push("/projects")
                 toast({
                     title: "Assignment submitted",
                     description: "Your project was sent successfully",
-                    variant: "success"
                 })
 
             } catch (error) {
@@ -123,12 +121,12 @@ const ProjectForm = ({ type, data }: ProjectFormProps) => {
         }
         if (type === "Update") {
             try {
-                await updateAssignment(assignmentId, values, path)
+                await updateAssignment(assignmentId, values, path as string)
                 router.push("/projects")
                 toast({
                     title: "Assignment submitted",
                     description: "Your project was sent successfully",
-                    variant: "success"
+                
                 })
 
             } catch (error) {
@@ -180,7 +178,7 @@ const ProjectForm = ({ type, data }: ProjectFormProps) => {
                             <FormItem className="w-full">
                                 <FormLabel>Enter Phone Number (Whatsapp)</FormLabel>
                                 <FormControl>
-                                    <Input type="phone" placeholder="Phone number(whatsapp)" {...field} className="input-field" />
+                                    <Input type="text" placeholder="Phone number(whatsapp)" {...field} className="input-field" />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -290,7 +288,7 @@ const ProjectForm = ({ type, data }: ProjectFormProps) => {
                                         Are you ready to procceed?
                                     </AlertDialogTitle>
                                     <AlertDialogDescription>
-                                        The cost for this project will be <span className="font-bold">{`${getPrice(priceToPay)}`}</span>, and if
+                                        The cost for this project will be <span className="font-bold text-green-500">{`${getPrice(priceToPay)}`}</span>, and if
                                         you agree to proceed, you may continue.
                                     </AlertDialogDescription>
                                 </AlertDialogHeader>

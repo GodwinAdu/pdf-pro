@@ -4,7 +4,7 @@ import React from "react";
 import Messages from "./Messages";
 import ChatInput from "./ChatInput";
 import { ChevronLeft, Loader2, XCircle } from "lucide-react";
-import { trpc } from "@/app/_trpc/client";
+import { trpc } from "@/app/(eduxcel)/_trpc/client";
 import Link from "next/link";
 import { buttonVariants } from "../ui/button";
 import { ChatContextProvider } from "./ChatContext";
@@ -66,16 +66,11 @@ const ChatWrapper = ({ id }:{id:string}) => {
             Too many pages in PDF
           </h3>
           <p className='text-zinc-500 text-sm'>
-            Your{' '}
+            Your coin{' '}
             <span className='font-medium'>
               {/* {isSubscribed ? 'Pro' : 'Free'} */}
             </span>{' '}
-            plan supports up to{' '}
-            {/* {isSubscribed
-              ? PLANS.find((p) => p.name === 'Pro')
-                  ?.pagesPerPdf
-              : PLANS.find((p) => p.name === 'Free')
-                  ?.pagesPerPdf}{' '} */}
+            is low to supports up to{' '}
             pages per PDF.
           </p>
           <Link

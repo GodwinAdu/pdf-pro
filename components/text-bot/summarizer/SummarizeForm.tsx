@@ -21,7 +21,6 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Textarea } from "@/components/ui/textarea"
-import { toast } from "@/components/ui/use-toast"
 import { Badge } from "@/components/ui/badge"
 import { ArrowDownRight, ArrowUpLeft, ChevronDown, Copy, EllipsisVertical, Eraser, Loader2, Repeat2, Undo2 } from "lucide-react"
 import { summarizeText } from "@/lib/text-bot/Summarizer"
@@ -29,7 +28,8 @@ import { useEffect, useState } from "react"
 import { paraphraseTextFn } from "@/lib/text-bot/Paraphrase"
 import { textImprovement } from "@/lib/text-bot/Improvement"
 import { grammarCheck } from "@/lib/text-bot/GrammarCheck"
-import { IUser } from "@/lib/models/user.models"
+import { IUser } from "@/lib/models/user.models";
+import axios from "axios"
 
 const FormSchema = z.object({
     text: z
@@ -133,20 +133,60 @@ const SummarizeForm = ({ type, user }: { type: string, user: IUser }) => {
             // }
             setIsLoading(true)
             if (type === "summarize") {
-                const value = await summarizeText(data.text);
-                setResult(value.summary)
+                const postData = { text: data.text };
+                try {
+                    const value = await axios.post('/api/summarize', postData, {
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    });
+                    console.log(value.data, "value response");
+                    setResult(value.data); // Handle the response correctly
+                } catch (error) {
+                    console.error('Error fetching summarized text:', error);
+                }
             }
             if (type === "paraphrase") {
-                const value = await paraphraseTextFn(data.text);
-                setParaphaseText(value.suggestions)
+                const postData = { text: data.text };
+                try {
+                    const value = await axios.post('/api/paraphrase', postData, {
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    });
+                    console.log(value.data, "value response");
+                    setResult(value.data); // Handle the response correctly
+                } catch (error) {
+                    console.error('Error fetching summarized text:', error);
+                }
             }
             if (type === "improvement") {
-                const value = await textImprovement(data.text);
-                setImprovement(value.improvements)
+                const postData = { text: data.text };
+                try {
+                    const value = await axios.post('/api/text_improvement', postData, {
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    });
+                    console.log(value.data, "value response");
+                    setResult(value.data); // Handle the response correctly
+                } catch (error) {
+                    console.error('Error fetching summarized text:', error);
+                }
             }
             if (type === "gec") {
-                const value = await grammarCheck(data.text);
-                setGrammar(value.corrections)
+                const postData = { text: data.text };
+                try {
+                    const value = await axios.post('/api/grammar_error', postData, {
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    });
+                    console.log(value.data, "value response");
+                    setResult(value.data); // Handle the response correctly
+                } catch (error) {
+                    console.error('Error fetching summarized text:', error);
+                }
             }
 
         } catch (error) {
@@ -185,7 +225,7 @@ const SummarizeForm = ({ type, user }: { type: string, user: IUser }) => {
 
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 h-full">
             <div className="space-y-2">
                 <div className="flex justify-between items-center pt-2">
                     <Badge className="bg-blue-500 text-white"><ArrowDownRight className="w-4 h-4 mr-1" />Input</Badge>
@@ -219,7 +259,7 @@ const SummarizeForm = ({ type, user }: { type: string, user: IUser }) => {
                                     <FormControl>
                                         <Textarea
                                             placeholder="Tell us a little bit about yourself"
-                                            className="max-h-[250px] min-h-[250px] resize-none shadow-xl"
+                                            className="max-h-[30rem] min-h-[22rem] resize-none shadow-xl"
                                             {...field}
                                         />
                                     </FormControl>
@@ -276,7 +316,7 @@ const SummarizeForm = ({ type, user }: { type: string, user: IUser }) => {
                     </DropdownMenu>
                 </div>
                 {type === "paraphrase" ? (
-                    <div className="max-h-[250px] min-h-[250px] border-2 border-gray-200 shadow-xl rounded-md relative">
+                    <div className="max-h-[30rem] min-h-[22rem] border-2 border-gray-200 shadow-xl rounded-md relative">
                         {textInput === "" || textInput === undefined ? (
                             <p className='text-gray-500 text-sm p-2'>Get your {getType(type)} output here ....</p>
                         ) : null}
@@ -299,7 +339,7 @@ const SummarizeForm = ({ type, user }: { type: string, user: IUser }) => {
                     </div>
                 ) : null}
                 {type === "summarize" ? (
-                    <div className="max-h-[250px] min-h-[250px] border-2 border-gray-200 shadow-xl rounded-md relative">
+                    <div className="max-h-[30rem] min-h-[22rem] border-2 border-gray-200 shadow-xl rounded-md relative">
                         {textInput === "" || textInput === undefined ? (
                             <p className='text-gray-500 text-sm p-2'>Get your {getType(type)} output here ....</p>
                         ) : null}
@@ -320,7 +360,7 @@ const SummarizeForm = ({ type, user }: { type: string, user: IUser }) => {
                     </div>
                 ) : null}
                 {type === "improvement" ? (
-                    <div className="max-h-[250px] min-h-[250px] border-2 border-gray-200 shadow-xl rounded-md relative">
+                    <div className="max-h-[30rem] min-h-[22rem] border-2 border-gray-200 shadow-xl rounded-md relative">
                         {textInput === "" || textInput === undefined ? (
                             <p className='text-gray-500 text-sm p-2'>Get your {getType(type)} output here ....</p>
                         ) : null}
@@ -351,7 +391,7 @@ const SummarizeForm = ({ type, user }: { type: string, user: IUser }) => {
                     </div>
                 ) : null}
                 {type === "gec" ? (
-                    <div className="max-h-[250px] min-h-[250px] border-2 border-gray-200 shadow-xl rounded-md relative">
+                    <div className="max-h-[30rem] min-h-[22rem] border-2 border-gray-200 shadow-xl rounded-md relative">
                         {textInput === "" || textInput === undefined ? (
                             <p className='text-gray-500 text-sm p-2'>Get your {getType(type)} output here ....</p>
                         ) : null}

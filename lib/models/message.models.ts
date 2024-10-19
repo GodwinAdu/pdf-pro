@@ -1,15 +1,16 @@
 import mongoose from "mongoose";
 
 const MessageSchema = new mongoose.Schema({
+    userId:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+    },
     text: String,
     isUserMessage: Boolean,
     updatedAt: Date,
-    userId:String,
     fileId: String ,
-    createdAt: {
-        type: Date,
-        default: Date.now,
-    },
+},{
+    timestamps: true,  // timestamps will automatically add createdAt and updatedAt fields.
 });
 
 

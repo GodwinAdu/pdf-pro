@@ -1,30 +1,22 @@
-import { INFINITE_QUERY_LIMIT } from "@/config/infinite-query";
-import { trpc } from "@/app/_trpc/client";
-import { useEffect, useRef, useContext } from "react";
-import { Bot, Loader2, MessageSquare } from "lucide-react";
-import { useIntersection } from "@mantine/hooks";
+import { trpc } from "@/app/(eduxcel)/_trpc/client";
+import { useEffect, useContext } from "react";
+import { Bot, Loader2 } from "lucide-react";
 import Message from "./Message";
 import Skeleton from "react-loading-skeleton";
 import { ConversationContext } from "./ConversationContext";
 
-
-const Messages = ({userId}:{userId:string}) => {
+const Messages = ({ sessionId }: { sessionId: string }) => {
   const { isLoading: isAiThinking } = useContext(ConversationContext);
 
-  const { data, isLoading, fetchNextPage } =
-    trpc.getConversations.useInfiniteQuery(
-      {
-        userId,
-        limit: INFINITE_QUERY_LIMIT,
-      },
-      {
-        getNextPageParam: (lastPage) => lastPage?.conversations?.nextCursor,
-        keepPreviousData: true,
-      }
-    );
+  // Fetch conversation data using trpc query (no infinite scrolling)
+  const { data, isLoading } = trpc.getConversationsBySessionId.useQuery({
+    sessionId,
+  });
 
-  console.log("data query", data);
-  const conversations = data?.pages.flatMap((page) => page?.conversations);
+  // The list of conversations fetched from the API
+  const conversations = data?.conversations ?? [];
+
+  // Create a loading message to display when AI is thinking
   const loadingMessage = {
     createdAt: new Date().toISOString(),
     id: "loading-message",
@@ -36,56 +28,27 @@ const Messages = ({userId}:{userId:string}) => {
     ),
   };
 
+  // Combine AI thinking message and conversations
   const combinedMessages = [
     ...(isAiThinking ? [loadingMessage] : []),
     ...(conversations ?? []),
   ];
 
-  const lastMessageRef = useRef<HTMLDivElement>(null);
-
-  const { ref, entry } = useIntersection({
-    root: lastMessageRef.current,
-    threshold: 1,
-  });
-
-  useEffect(() => {
-    if (entry?.isIntersecting) {
-      fetchNextPage();
-    }
-  }, [entry, fetchNextPage]);
-
-
   return (
     <div className="flex max-h-[calc(100vh-3.5rem-7rem)] border-zinc-200 flex-1 flex-col-reverse gap-4 p-3 overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch">
-      {combinedMessages?.map((page, pageIndex) =>
-        page?.messages?.map((message, i) => {
-          const isNextMessageSamePerson =
-            pageIndex > 0 &&
-            page?.messages[i - 1]?.isUserMessage === message?.isUserMessage;
+      {combinedMessages?.map((message, index) => {
+        const isNextMessageSamePerson =
+          index > 0 && combinedMessages[index - 1]?.isUserMessage === message?.isUserMessage;
+          // console.log(combinedMessages,"complete message")
 
-          if (
-            pageIndex === combinedMessages?.length - 1 &&
-            i === page?.messages?.length - 1
-          ) {
-            return (
-              <Message
-                ref={ref}
-                message={message}
-                isNextMessageSamePerson={isNextMessageSamePerson}
-                key={message._id}
-              />
-            );
-          } else {
-            return (
-              <Message
-                message={message}
-                isNextMessageSamePerson={isNextMessageSamePerson}
-                key={message._id}
-              />
-            );
-          }
-        })
-      )}
+        return (
+          <Message
+            message={message}
+            isNextMessageSamePerson={isNextMessageSamePerson}
+            key={message.id}
+          />
+        );
+      })}
 
       {isLoading ? (
         <div className="w-full flex flex-col gap-2 ">
@@ -94,7 +57,7 @@ const Messages = ({userId}:{userId:string}) => {
           <Skeleton className="h-16" />
           <Skeleton className="h-16" />
         </div>
-      ) : combinedMessages.every((page) => page?.messages?.length === 0) ? (
+      ) : combinedMessages.length === 0 ? (
         <div className="flex-1 flex flex-col items-center justify-center pt-40 gap-2">
           <Bot className="h-8 w-8 text-blue-500" />
           <h3 className="font-semibold text-xl">You&apos;re all set!</h3>
@@ -102,7 +65,7 @@ const Messages = ({userId}:{userId:string}) => {
             Ask your first question to get started.
           </p>
         </div>
-      ) : null} 
+      ) : null}
     </div>
   );
 };

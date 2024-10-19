@@ -5,28 +5,26 @@ import {
     type FileRouter,
 } from 'uploadthing/next'
 
-import { PDFLoader } from 'langchain/document_loaders/fs/pdf'
 import { OpenAIEmbeddings } from '@langchain/openai'
 import { PineconeStore } from '@langchain/pinecone'
 import { getPineconeClient } from '@/lib/pinecone'
-import { isUserSubscribed } from '@/lib/profile/subscription';
-import { PLANS } from '@/config/plans';
-import { auth } from '@clerk/nextjs/server';
-import { fetchUser, updateUserUpload } from '@/lib/actions/user.actions';
+import { currentUser } from '@/lib/helpers/current-user';
+import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
+import { deductCoinByPdfPages } from '@/lib/actions/coin.actions';
 
 
 const f = createUploadthing()
 
 const middleware = async () => {
 
-    const { userId } = auth();
+    const user = await currentUser();
+    console.log(user, "user authenticated in metadata")
+    const userId = user._id;
 
     if (!userId) throw new Error('Unauthorized')
 
-    const isSubscribed = await isUserSubscribed()
 
-
-    return { userId, isSubscribed }
+    return { userId }
 }
 
 const onUploadComplete = async ({
@@ -41,20 +39,21 @@ const onUploadComplete = async ({
     }
 }) => {
 
-    const { userId } = metadata
-    const user = await fetchUser({ clerkId: userId });
-
-    const data = {
-        key: file.key,
-        name: file.name,
-        userId: metadata.userId,
-        url: `https://uploadthing-prod.s3.us-west-2.amazonaws.com/${file.key}`,
-        uploadStatus: 'PROCESSING',
-    };
-
     try {
+        const { userId } = metadata
+        // const user = await fetchUser({userId });
 
-        await updateUserUpload(user?._id);
+        const data = {
+            key: file.key,
+            name: file.name,
+            userId,
+            url: file.url,
+            uploadStatus: 'PROCESSING',
+        };
+
+        console.log("creating file to DB", data)
+
+        // await updateUserUpload(user?._id);
         await createFile(data);
 
     } catch (error) {
@@ -65,12 +64,9 @@ const onUploadComplete = async ({
     try {
 
         console.log("files:", fetchPdf.url);
-        const value = `https://uploadthing-prod.s3.us-west-2.amazonaws.com/${file.key}`
+        // const value = `https://uploadthing-prod.s3.us-west-2.amazonaws.com/${file.key}`
         // const response = await fetchDataWithRetry(value, 10)
-        const response = await fetch(value, { cache: 'no-store' })
-        console.log(response)
-
-
+        const response = await fetch(fetchPdf.url, { cache: 'no-store' })
         const blob = await response.blob();
         const loader = new PDFLoader(blob);
 
@@ -83,27 +79,8 @@ const onUploadComplete = async ({
 
         console.log(pagesAmt)
 
-        const { isSubscribed } = metadata
+        await deductCoinByPdfPages(pagesAmt, metadata.userId)
 
-        const isProExceeded =
-            pagesAmt >
-            PLANS.find((plan) => plan.name === 'Pro')!.pagesPerPdf
-        console.log(isProExceeded, "pro exceeded")
-        const isFreeExceeded =
-            pagesAmt >
-            PLANS.find((plan) => plan.name === 'Free')!
-                .pagesPerPdf
-        console.log(isFreeExceeded, "is free exceeded")
-
-        if (
-            (isSubscribed && isProExceeded) ||
-            (!isSubscribed && isFreeExceeded)
-        ) {
-            await updateUploadStatus({
-                fileId: fetchPdf._id,
-                newStatus: 'FAILED',
-            });
-        }
         // vectorize and index entire document
         const pinecone = await getPineconeClient()
         const pineconeIndex = pinecone.Index('summaq')
@@ -138,12 +115,18 @@ const onUploadComplete = async ({
 }
 
 export const ourFileRouter = {
-    freePlanUploader: f({ pdf: { maxFileSize: '4MB' } })
+    serverImage: f({ image: { maxFileSize: "2MB", maxFileCount: 1 } })
+        .middleware(middleware)
+        .onUploadComplete(() => { }),
+    messageFile: f(["image", "pdf"])
+        .middleware(middleware)
+        .onUploadComplete(() => { }),
+    pdfUploader: f({ pdf: { maxFileSize: '32MB' } })
         .middleware(middleware)
         .onUploadComplete(onUploadComplete),
-    proPlanUploader: f({ pdf: { maxFileSize: '16MB' } })
+    media: f({ image: { maxFileSize: '1MB' } })
         .middleware(middleware)
-        .onUploadComplete(onUploadComplete),
+        .onUploadComplete(() => { }),
 } satisfies FileRouter
 
 export type OurFileRouter = typeof ourFileRouter

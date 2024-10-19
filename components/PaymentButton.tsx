@@ -45,8 +45,11 @@ const PaymentButton = ({ projectId, name, email, amount, fileUrl }: PaymentButto
   const subscriptionSuccess = async () => {
     try {
       router.push('/projects/thank_you')
-      await updateAssignmentPayment(projectId)
-      handleDownloadPdf();
+      const updatedAssignment = await updateAssignmentPayment(projectId)
+      if (updatedAssignment.status === "COMPLETED" && updatedAssignment.fileUrl !== null) {
+
+        handleDownloadPdf();
+      }
     } catch (error) {
       console.error("Error in success payment:", error);
     }
@@ -54,7 +57,7 @@ const PaymentButton = ({ projectId, name, email, amount, fileUrl }: PaymentButto
   };
 
   const subscriptionClose = () => {
-    alert('opps youve close it')
+    alert(`oops you've close it`);
   };
 
 

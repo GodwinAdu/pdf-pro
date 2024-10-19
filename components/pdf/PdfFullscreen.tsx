@@ -8,8 +8,8 @@ import { Button } from '../ui/button'
 import { Expand, Loader2 } from 'lucide-react'
 import SimpleBar from 'simplebar-react'
 import { Document, Page, pdfjs } from 'react-pdf'
-import { useToast } from '../ui/use-toast'
 import { useResizeDetector } from 'react-resize-detector'
+import { toast } from '@/hooks/use-toast'
 
 interface PdfFullscreenProps {
   fileUrl: string
@@ -19,8 +19,6 @@ const PdfFullscreen = ({ fileUrl }: PdfFullscreenProps) => {
   const [isOpen, setIsOpen] = useState(false)
   const [numPages, setNumPages] = useState<number>()
 
-
-  const { toast } = useToast()
 
   const { width, ref } = useResizeDetector();
 

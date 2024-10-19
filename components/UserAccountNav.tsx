@@ -1,8 +1,9 @@
-import { getUserSubscriptionPlan } from '@/lib/stripe'
+"use client"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from './ui/dropdown-menu'
@@ -12,101 +13,49 @@ import { Avatar, AvatarFallback } from './ui/avatar'
 import Image from 'next/image'
 
 import Link from 'next/link'
-import { Book, Gem, LogOut, User} from 'lucide-react'
-import { Icons } from './icon/icons'
-import { Setting } from './Settings'
+import { Book, Gem, LayoutDashboard, LogOut, LogOutIcon, MessageCircle, Settings, User } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { ProfileModal } from './common/ProfileModal'
 
 
-interface UserAccountNavProps {
-  email: string | undefined
-  name: string
-  imageUrl: string
-}
 
-const UserAccountNav = ({
-  email,
-  imageUrl,
-  name,
-}: UserAccountNavProps) => {
-  // const subscriptionPlan = await getUserSubscriptionPlan()
+
+const UserAccountNav = ({ user }) => {
+  const router = useRouter();
+
+
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger
-        asChild
-        className='overflow-visible'>
-        <Button className='rounded-full h-8 w-8 aspect-square bg-slate-400'>
-          <Avatar className='relative w-8 h-8'>
-            {imageUrl ? (
-              <div className='relative aspect-square h-full w-full'>
-                <Image
-                  fill
-                  src={imageUrl}
-                  alt='profile picture'
-                  referrerPolicy='no-referrer'
-                />
-              </div>
-            ) : (
-              <AvatarFallback>
-                <span className='sr-only'>{name}</span>
-                <Icons.user className='h-4 w-4 text-zinc-900' />
-              </AvatarFallback>
-            )}
-          </Avatar>
-        </Button>
+      <DropdownMenuTrigger asChild>
+        <button
+          aria-label='profile button'
+          type="button"
+          className="flex items-center rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white"
+          id="user-menu-button"
+          aria-haspopup="true"
+        >
+          <span className="sr-only">Open user menu</span>
+          <Image
+            width={100}
+            height={100}
+            quality={100}
+            unoptimized
+            className="h-8 w-8 p-0.5 rounded-full"
+            src={user?.imageUrl ? user?.imageUrl : "/assets/user.svg"}
+            alt="profile image"
+          />
+        </button>
       </DropdownMenuTrigger>
-
-      <DropdownMenuContent className='bg-white' align='end'>
-        <div className='flex items-center justify-start gap-2 p-2'>
-          <div className='flex flex-col space-y-0.5 leading-none'>
-            {name && (
-              <p className='font-medium text-sm text-black'>
-                {name}
-              </p>
-            )}
-            {email && (
-              <p className='w-[200px] truncate text-xs text-zinc-700'>
-                {email}
-              </p>
-            )}
-          </div>
-        </div>
-
+      <DropdownMenuContent align="end" className='px-4 py-2 w-56 md:w-72'>
+        <p className='font-bold text-sm'>{user?.fullName}</p>
+        <p className='text-xs text-muted-foreground'>{user?.email}</p>
         <DropdownMenuSeparator />
-
-        <DropdownMenuItem asChild>
-          <Link href='/dashboard'><User /> Profile</Link>
-        </DropdownMenuItem>
-        
+        <DropdownMenuItem className='font-bold' onClick={() => router.push(`/user/${user._id}`)}><LayoutDashboard className='w-4 h-4 mr-2' />Dashboard</DropdownMenuItem>
+        <ProfileModal user={user} />
+        <DropdownMenuItem onClick={() => router.push('/contact')}><MessageCircle className='w-4 h-4 mr-2' />Support</DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
-          <Link href='/dashboard'><Book /> Instructions</Link>
-        </DropdownMenuItem>
-        
-        <DropdownMenuSeparator />
-
-        <DropdownMenuItem asChild>
-          <Setting />
-        </DropdownMenuItem>
-
-        {/* <DropdownMenuItem asChild>
-          {subscriptionPlan?.isSubscribed ? (
-            <Link href='/dashboard/billing'>
-              Manage Subscription
-            </Link>
-          ) : (
-            <Link href='/pricing'>
-              Upgrade{' '}
-              <Gem className='text-blue-600 h-4 w-4 ml-1.5' />
-            </Link>
-          )}
-        </DropdownMenuItem> */}
-
-        <DropdownMenuSeparator />
-
-        <DropdownMenuItem asChild className='cursor-pointer'>
-         <Link href='/dashboard'><LogOut /> Log Out</Link>
-        </DropdownMenuItem>
+        <DropdownMenuItem><LogOut className='w-4 h-4 mr-2' />Logout</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   )

@@ -3,13 +3,20 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import Provider from "@/components/Provider";
-import { ClerkProvider } from "@clerk/nextjs";
 import "react-loading-skeleton/dist/skeleton.css";
 import "simplebar-react/dist/simplebar.min.css";
-import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/theme-provider";
 import Loader from "@/components/progress-bar/Loader"
-import CheckIsSubscribed from "@/components/CheckIsSubscribed";
+import { Toaster } from "@/components/ui/toaster";
+import { ModalProvider } from "@/components/group-discussion/providers/modal-provider";
+import { SocketProvider } from "@/components/group-discussion/providers/socket-provider";
+import CoinPurchase from "@/components/coins/CoinPurchase";
+import { currentUser } from "@/lib/helpers/current-user";
+import WarningCoin from "@/components/coins/WarningCoin";
+import UpdateLevelAndStage from "@/components/UpdateLevelAndStage";
+
+
+
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,36 +25,38 @@ export const metadata: Metadata = {
   description: "Created by Jutech Devs",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const user = await currentUser();
   return (
-    <ClerkProvider
-    >
-      <html lang="en" suppressHydrationWarning>
-        <body
-          className={cn(
-            `font-sans antialiased grainy `,
-            inter.className
-          )}
-        >
-          <Provider>
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="system"
-              enableSystem
-              disableTransitionOnChange
-            >
-              <Toaster />
-              <Loader />
-              <CheckIsSubscribed />
-              {children}
-            </ThemeProvider>
-          </Provider>
-        </body>
-      </html>
-    </ClerkProvider>
+
+    <html lang="en" suppressHydrationWarning>
+      <body
+        className={cn(
+          `font-sans antialiased grainy `,
+          inter.className
+        )}
+      >
+        {/* <UpdateLevelAndStage user={user} /> */}
+        <WarningCoin user={user} />
+        <CoinPurchase user={user} />
+        <ModalProvider />
+        <Provider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <Toaster />
+            <Loader />
+            {children}
+          </ThemeProvider>
+        </Provider>
+      </body>
+    </html>
   );
 }

@@ -1,7 +1,10 @@
 import mongoose from "mongoose";
 
 const FileSchema = new mongoose.Schema({
-    userId:String,
+    userId:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+    },
     name: String,
     uploadStatus: {
         type: String,
@@ -16,12 +19,9 @@ const FileSchema = new mongoose.Schema({
             ref: 'Message',
         },
     ],
-    createdAt: {
-        type: Date,
-        default: Date.now,
-    },
-    updatedAt: Date,
     
+},{
+    timestamps: true,  // timestamps will automatically add createdAt and updatedAt fields.
 });
 
 const File = mongoose.models.File || mongoose.model("File", FileSchema);

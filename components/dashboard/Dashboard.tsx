@@ -1,5 +1,5 @@
 "use client";
-import { trpc } from "@/app/_trpc/client";
+import { trpc } from "@/app/(eduxcel)/_trpc/client";
 import UploadButton from "./UploadButton";
 import { Ghost, Loader2, MessageSquare, Plus, Trash } from "lucide-react";
 import Skeleton from "react-loading-skeleton";
@@ -21,14 +21,14 @@ import {
 import { GetHelpButton } from "../modal/GetHelpButton";
 import { IUser } from "@/lib/models/user.models";
 import { cn } from "@/lib/utils";
+import { Number } from "mongoose";
 
-const Dashboard = ({ isSubscribed, user }: { isSubscribed: boolean, user: IUser }) => {
+const Dashboard = ({ user, coin }: { user: IUser, coin: number }) => {
   const [currentlyDeletingFile, setCurrentlyDeletingFile] = useState<
     string | null
   >(null);
 
 
-  console.log(isSubscribed)
   const utils = trpc.useUtils();
   const { data: files, isLoading } = trpc.getUserFiles.useQuery();
 
@@ -49,8 +49,7 @@ const Dashboard = ({ isSubscribed, user }: { isSubscribed: boolean, user: IUser 
       <div className="mt-2 flex flex-col items-start justify-between gap-4 border-b border-gray-200 pb-5 sm:flex-row sm:items-center sm:gap-0">
         <h1 className="mb-3 font-bold text-2xl md:text-5xl text-gray-900">My Files</h1>
         <div className="flex gap-4 px-2">
-          <UploadButton user={user} isSubscribed={isSubscribed} />
-          <Link href="/chat-ai" className={cn(buttonVariants())}>Jutech AI</Link>
+          <UploadButton coin={coin} user={user} />
         </div>
       </div>
       {/**Display all user files from database */}
@@ -58,7 +57,7 @@ const Dashboard = ({ isSubscribed, user }: { isSubscribed: boolean, user: IUser 
         <ul className="mt-8 grid grid-cols-1 gap-6 divide-y divide-zinc-200 md:grid-cols-2 lg:grid-cols-3">
           {files
             ?.sort(
-              (a, b) =>
+              (a:any, b:any) =>
                 new Date(b.createdAt).getTime() -
                 new Date(a.createdAt).getTime()
             )

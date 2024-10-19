@@ -1,6 +1,6 @@
 "use client"
 
-import React from 'react'
+import React, { useState } from 'react'
 import { Button } from './ui/button'
 import { Download } from 'lucide-react'
 import {
@@ -13,14 +13,17 @@ import { Packer, Document, Paragraph, TextRun, PageBreak } from 'docx';
 import { saveAs } from 'file-saver';
 import { pdfjs } from 'react-pdf';
 
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
+pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 const PdfDownloadButton = ({ fileUrl }: { fileUrl: string }) => {
+    const [isPdfLoading, setIsPdfLoading] = useState(false);
+    const [isDocLoading, setIsDocLoading] = useState(false);
 
     const handleDownloadDocx = async (event: any) => {
         event.preventDefault();
 
         try {
+            setIsDocLoading(true);
             // Load the PDF
             const pdf = await pdfjs.getDocument(fileUrl).promise;
             const numPages = pdf.numPages;
@@ -46,7 +49,7 @@ const PdfDownloadButton = ({ fileUrl }: { fileUrl: string }) => {
 
                 // Add a page break after each page, except the last one
                 if (pageNumber !== numPages) {
-                    pageParagraphs.push(new Paragraph({}));
+                    pageParagraphs.push(new Paragraph({ children: [new PageBreak()] }));
                 }
             }
 
@@ -69,14 +72,17 @@ const PdfDownloadButton = ({ fileUrl }: { fileUrl: string }) => {
             console.log(`Downloaded PDF as Word document: ${filename}`);
         } catch (error) {
             console.error("Error converting PDF to Word document:", error);
+        } finally {
+            setIsDocLoading(false);
         }
-
     }
+
 
     const handleDownloadPdf = async (event: any) => {
         event.preventDefault();
 
         try {
+            setIsPdfLoading(true);
             const response = await fetch(fileUrl, { cache: 'no-store' });
             const blob = await response.blob();
             // Generate a unique filename using timestamp
@@ -98,6 +104,8 @@ const PdfDownloadButton = ({ fileUrl }: { fileUrl: string }) => {
             console.log("Downloaded PDF");
         } catch (error) {
             console.error("Error downloading PDF:", error);
+        } finally {
+            setIsPdfLoading(false);
         }
     }
 
@@ -116,10 +124,10 @@ const PdfDownloadButton = ({ fileUrl }: { fileUrl: string }) => {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                     <DropdownMenuItem onClick={handleDownloadPdf}>
-                        Download PDF
+                        {isPdfLoading? "Loading..." :"Download PDF"}
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={handleDownloadDocx}>
-                        Download DOCX
+                        {isDocLoading? "Loading..." :"Download DOCX"}
                     </DropdownMenuItem>
 
                 </DropdownMenuContent>

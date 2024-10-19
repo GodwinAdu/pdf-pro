@@ -1,6 +1,6 @@
 import { INFINITE_QUERY_LIMIT } from "@/config/infinite-query";
 import { ChatContext } from "./ChatContext";
-import { trpc } from "@/app/_trpc/client";
+import { trpc } from "@/app/(eduxcel)/_trpc/client";
 import { useEffect, useRef, useContext } from "react";
 import { Loader2, MessageSquare } from "lucide-react";
 import { useIntersection } from "@mantine/hooks";

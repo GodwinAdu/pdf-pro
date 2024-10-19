@@ -1,47 +1,36 @@
-
-
-
 import { openai } from "@/lib/openai";
-
-import { NextRequest } from "next/server"
-import { OpenAIStream, StreamingTextResponse } from 'ai'
-import { currentUser } from "@clerk/nextjs/server";
+import { NextRequest } from "next/server";
 import { SendConversationValidator } from "@/lib/validators/SendConversationValidator";
 import { createBotConversation, createConversation, fetchPrevConversations } from "@/lib/actions/conversation.actions";
-
+import { currentUser } from "@/lib/helpers/current-user";
 
 export const POST = async (req: NextRequest) => {
-
-
     const body = await req.json();
 
     let user = await currentUser();
-
 
     if (!user) {
         return new Response('Unauthorized', { status: 401 });
     }
 
-    const { userId, message } = SendConversationValidator.parse(body);
+    const { sessionId,userId, message } = SendConversationValidator.parse(body);
 
     await createConversation({
+        sessionId,
         userId,
         text: message
-    })
+    });
 
+    const prevMessages = await fetchPrevConversations({sessionId});
 
-
-    const prevMessages = await fetchPrevConversations({ userId });
-
-    const formattedPrevMessages = (prevMessages || []).map((msg) => ({
-        role: msg.isUserMessage ? ('user' as const) : ('assistant' as const),
+    const formattedPrevMessages = (prevMessages?.messages || []).map((msg) => ({
+        role: msg.isUserMessage ? 'user' : 'assistant',
         content: msg.text,
-    })) as { role: "user" | "assistant"; content: any; }[];
+    })) as { role: "user" | "assistant"; content: any }[];
 
-    // ...
-
+    // Create chat completion with streaming enabled
     const response = await openai.chat.completions.create({
-        model: 'gpt-3.5-turbo',
+        model: 'gpt-4o',
         temperature: 0,
         stream: true,
         messages: [
@@ -49,27 +38,42 @@ export const POST = async (req: NextRequest) => {
                 role: 'system',
                 content: 'You are a helpful assistant.'
             },
-            ...(formattedPrevMessages || []).map((message) => ({
-                role: message.role,
-                content: message.content
-            })),
+            ...formattedPrevMessages,
             {
                 role: 'user',
                 content: message
             }
         ]
-    })
+    });
 
-    console.log(formattedPrevMessages)
-    const stream = OpenAIStream(response, {
-        async onCompletion(completion) {
+    let fullContent = '';  // Variable to accumulate the whole content
+
+    const stream = new ReadableStream({
+        async start(controller) {
+            const encoder = new TextEncoder();
+
+            for await (const chunk of response) {
+                const content = chunk.choices[0]?.delta?.content || '';
+
+                if (content) {
+                    // Accumulate content into fullContent variable
+                    fullContent += content;
+
+                    // Stream the content to the client
+                    controller.enqueue(encoder.encode(content));
+                }
+            }
+
+            // After the streaming ends, save the entire content at once
             await createBotConversation({
+                sessionId,
                 userId,
-                text: completion
-            })
-        },
-    })
+                text: fullContent.trim(),
+            });
 
-    return new StreamingTextResponse(stream)
+            controller.close();
+        }
+    });
 
-}
+    return new Response(stream);
+};

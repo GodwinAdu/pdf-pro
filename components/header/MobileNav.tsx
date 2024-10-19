@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import UserAccountNav from "../UserAccountNav";
-import { SignInButton, SignUpButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { Button } from "../ui/button";
 
 interface MobileNavProps {
@@ -35,9 +34,7 @@ const MobileNav = ({ isAuth, name, email, imageUrl }: MobileNavProps) => {
   return (
     <div className="sm:hidden">
       <div className="flex items-center gap-4">
-        <SignedIn>
-          <UserButton afterSignOutUrl="/" />
-        </SignedIn>
+        
         <Menu
           onClick={toggleOpen}
           className="relative z-50 h-5 w-5 text-zinc-700"
@@ -50,26 +47,11 @@ const MobileNav = ({ isAuth, name, email, imageUrl }: MobileNavProps) => {
             {!isAuth ? (
               <>
                 <li>
-                  <SignedOut>
-                    <SignUpButton>
-                      <Button size="sm">
-                        Get started <ArrowRight className="ml-1.5 h-5 w-5" />
-                      </Button>
-                    </SignUpButton>
-                  </SignedOut>
+                  get started
                 </li>
                 <li className="my-3 h-px w-full bg-gray-300" />
                 <li>
-                  <SignedOut>
-                    <SignInButton >
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                      >
-                        Sign in
-                      </Button>
-                    </SignInButton>
-                  </SignedOut>
+                 sign -in
                 </li>
               </>
             ) : (

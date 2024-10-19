@@ -12,7 +12,9 @@ const ShowFooter = () => {
     pathname.includes("/projects") ||
     pathname.includes("/pricing") ||
     pathname.includes("/auth-callback")||
-    pathname.includes("/text_bot");
+    pathname.includes("/text_bot") ||
+    pathname.includes("/contact") ||
+    pathname.includes("/settings") ;
   return (
     <>
       {!show && (

@@ -1,75 +1,141 @@
+import { Schema, Document, model, models } from "mongoose";
 
-import { Schema, models, model, Document } from "mongoose";
-
-interface Plan {
-    amount: number;
-    planName: string;
-    subscriptionType: string;
-    subscriptionStart: string;
-    subscriptionEnd: string;
-}
-
+// Interface representing the User document
 export interface IUser extends Document {
-    clerkId: string;
+    username: string;
     fullName: string;
     email: string;
-    phone: string;
-    freeAiChat: number;
-    freePdfChat: number;
-    plan: Plan;
-    numberUpload:number;
+    password: string;
+    phone?: string;
+    imageUrl?: string;
+    referralCode?: string;
+    coinId: Schema.Types.ObjectId;
+    teamMembers: Schema.Types.ObjectId[];
+    threads: Schema.Types.ObjectId[];
+    stage?: string;
+    level?: string;
+    isBanned: boolean;
+    isDeleted: boolean;
+    isActive:boolean;
+    emailVerified: boolean;
+    phoneVerified: boolean;
+    loginAttempts: number;
+    lastLogin?: Date;
+    accountLocked: boolean;
+    permissions: {
+        deleteAccount: boolean;
+    };
+    preferences: {
+        notifications: {
+            email: boolean;
+            sms: boolean;
+        };
+    };
+    metadata?: {
+        browser?: string;
+        device?: string;
+        location?: string;
+    };
     createdAt?: Date;
     updatedAt?: Date;
 }
 
-
+// Schema definition
 const UserSchema = new Schema<IUser>({
-    clerkId: {
+    username: {
         type: String,
-        required: true
+        required: true,
+        unique: true,
     },
-    fullName: String,
+    fullName: {
+        type: String,
+        required: true,
+    },
     email: {
         type: String,
         unique: true,
+        required: true,
+    },
+    password: {
+        type: String,
+        required: true,
     },
     phone: String,
-    freeAiChat: {
+    imageUrl: String,
+    referralCode: String,
+    coinId: {
+        type: Schema.Types.ObjectId,
+        ref: 'Coin',
+    },
+    teamMembers: [{
+        type: Schema.Types.ObjectId,
+        ref: "User",
+    }],
+    threads: [{
+        type: Schema.Types.ObjectId,
+        ref: "Thread",
+    }],
+    stage: String,
+    level: String,
+    isBanned: {
+        type: Boolean,
+        default: false,
+    },
+    isDeleted: {
+        type: Boolean,
+        default: false,
+    },
+    emailVerified: {
+        type: Boolean,
+        default: false,
+    },
+    phoneVerified: {
+        type: Boolean,
+        default: false,
+    },
+    loginAttempts: {
         type: Number,
-        default: 0
+        default: 0,
     },
-    freePdfChat: {
-        type: Number,
-        default: 0
+    lastLogin: Date,
+    accountLocked: {
+        type: Boolean,
+        default: false,
     },
-    plan: {
-        amount: {
-            type: Number,
-            default: 0
+    isActive: {
+        type: Boolean,
+        default: true,  // By default, users are active when created
+    },
+    permissions: {
+        deleteAccount: {
+            type: Boolean,
+            default: true,
         },
-        planName: {
-            type:String,
-            default:"free"
-        },
-        subscriptionType: String,
-        subscriptionStart: String,
-        subscriptionEnd: String,
     },
-    numberUpload:{
-        type:Number,
-        default:0
+    preferences: {
+        notifications: {
+            email: {
+                type: Boolean,
+                default: true,
+            },
+            sms: {
+                type: Boolean,
+                default: false,
+            },
+        }
     },
-    createdAt: {
-        type: Date,
-        default: Date.now,
+    metadata: {
+        browser: String,
+        device: String,
+        location: String,
     },
-    updatedAt: {
-        type: Date,
-        default: Date.now,
-    }
+}, {
+    timestamps: true,
+    versionKey: false,
+    toObject: { virtuals: true },
+    toJSON: { virtuals: true },
 });
 
-
-const User = models.User || model("User", UserSchema);
+const User = models.User || model<IUser>("User", UserSchema);
 
 export default User;
