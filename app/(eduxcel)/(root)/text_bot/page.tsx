@@ -19,7 +19,7 @@ const page = async () => {
   return (
     <main className="mx-auto max-w-7xl p-1 md:p-4">
       <div className="mt-1 flex items-center justify-between gap-4 border-b border-gray-200 pb-2 sm:flex-row sm:items-center sm:gap-0">
-        <h1 className="mb-3 font-bold text-2xl md:text-5xl text-gray-900">Text Manupulation</h1>
+        <h1 className="mb-3 font-bold text-2xl md:text-5xl text-gray-900">Text Manipulation</h1>
       </div>
       <Tabs defaultValue="summarizer" className="w-full h-screen">
         <div className="overflow-x-auto bg-white/75 backdrop-blur-lg max-w-5xl py-1">

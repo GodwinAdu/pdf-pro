@@ -62,7 +62,7 @@ interface ParaphraseProps {
     text: string;
 }
 
-const SummarizeForm = ({ type, user }: { type: string, user: IUser }) => {
+const SummarizeForm = ({ type }: { type: string,  }) => {
     const [result, setResult] = useState<string>("")
     const [paraphraseText, setParaphaseText] = useState<ParaphraseProps[]>([])
     const [grammar, setGrammar] = useState<GrammarProps[] | null>(null)
