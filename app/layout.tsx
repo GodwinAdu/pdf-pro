@@ -9,11 +9,10 @@ import { ThemeProvider } from "@/components/theme-provider";
 import Loader from "@/components/progress-bar/Loader"
 import { Toaster } from "@/components/ui/toaster";
 import { ModalProvider } from "@/components/group-discussion/providers/modal-provider";
-import { SocketProvider } from "@/components/group-discussion/providers/socket-provider";
 import CoinPurchase from "@/components/coins/CoinPurchase";
 import { currentUser } from "@/lib/helpers/current-user";
 import WarningCoin from "@/components/coins/WarningCoin";
-import UpdateLevelAndStage from "@/components/UpdateLevelAndStage";
+import { Analytics } from '@vercel/analytics/react';
 
 
 
@@ -21,7 +20,7 @@ import UpdateLevelAndStage from "@/components/UpdateLevelAndStage";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "SummaQ",
+  title: "Eduxcel",
   description: "Created by Jutech Devs",
 };
 
@@ -56,6 +55,7 @@ export default async function RootLayout({
             <Toaster />
             <Loader />
             {children}
+            <Analytics />
           </ThemeProvider>
         </Provider>
       </body>

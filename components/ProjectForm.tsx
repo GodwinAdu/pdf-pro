@@ -252,6 +252,9 @@ const ProjectForm = ({ type, data }: ProjectFormProps) => {
                                         </SelectTrigger>
                                     </FormControl>
                                     <SelectContent>
+                                        <SelectItem value="Presentation(Docx)">Presentation (Docx)</SelectItem>
+                                        <SelectItem value="Presentation(powerpoint)">Presentation (powerpoint)</SelectItem>
+                                        <SelectItem value="Presentation(powerpoint with pictures)">Presentation (powerpoint with pictures)</SelectItem>
                                         <SelectItem value="Research Assistance">Research Assistance</SelectItem>
                                         <SelectItem value="Nursing Care Study">Nursing Care Study</SelectItem>
                                         <SelectItem value="Thesis">Thesis</SelectItem>
@@ -259,7 +262,6 @@ const ProjectForm = ({ type, data }: ProjectFormProps) => {
                                         <SelectItem value="Essay Writing">Essay Writing</SelectItem>
                                         <SelectItem value="English Writing">English Writing</SelectItem>
                                         <SelectItem value="Typing Support">Typing Support</SelectItem>
-                                        <SelectItem value="Presentation Work">Presentation Work</SelectItem>
                                         <SelectItem value="Essay Editing and Proofreading">Essay Editing and Proofreading</SelectItem>
                                         <SelectItem value="Subject Tutoring">Subject Tutoring</SelectItem>
                                     </SelectContent>

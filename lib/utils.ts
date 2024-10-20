@@ -83,30 +83,34 @@ export const calculateSubscriptionEndDate = (currentDate: string, subscriptionTy
 }
 
 
-export  const getPrice = (selectedValue: string) => {
+export const getPrice = (selectedValue: string) => {
   switch (selectedValue) {
-      case "Research Assistance":
-          return "Gh600";
-      case "Nursing Care Study":
-          return "Gh600";
-      case "Thesis":
-          return "Gh600";
-      case "Homework Help":
-          return "Gh15";
-      case "Essay Writing":
-          return "Gh25";
-      case "English Writing":
-          return "Gh30";
-      case "Typing Support":
-          return "Gh20";
-      case "Presentation Work":
-          return "Gh30";
-      case "Essay Editing and Proofreading":
-          return "Gh50";
-      case "Subject Tutoring":
-          return "Gh50";
-      default:
-          return "Unknown price";
+    case "Presentation(Docx)":
+      return "Gh30";
+    case "Presentation(powerpoint)":
+      return "Gh40";
+    case "Presentation(powerpoint with pictures)":
+      return "Gh45";
+    case "Research Assistance":
+      return "Gh600";
+    case "Nursing Care Study":
+      return "Gh600";
+    case "Thesis":
+      return "Gh600";
+    case "Homework Help":
+      return "Gh15";
+    case "Essay Writing":
+      return "Gh25";
+    case "English Writing":
+      return "Gh30";
+    case "Typing Support":
+      return "Gh20";
+    case "Essay Editing and Proofreading":
+      return "Gh50";
+    case "Subject Tutoring":
+      return "Gh50";
+    default:
+      return "Unknown price";
   }
 };
 
